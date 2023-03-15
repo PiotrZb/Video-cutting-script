@@ -35,20 +35,28 @@ def displayer(vcp):
 def load_all_from_txt(file_path=URL_FILE_PATH, destination_path=SAVE_FILES_DESTINATION_PATH):
 
     wrong_urls = []
+    used_urls = []
 
     with open(file_path, 'r') as file:
         lines = file.readlines()
         lines_count = len(lines)
         for index, url in enumerate(lines):
-            try:
-                movie = YouTube(url)
-                print(f"{index + 1} : {lines_count} -> Downloading file: \""
-                      f"{movie.streams[0].title}\"")
-                movie.streams.get_highest_resolution().download(
-                    output_path=destination_path)
-            except Exception as exc:
-                wrong_urls.append(url)
-                print(exc)
+            if url not in used_urls:
+                try:
+                    movie = YouTube(url)
+                    print(f"{index + 1} : {lines_count} -> Downloading file: \""
+                          f"{movie.streams[0].title}\"")
+                    stream = movie.streams.get_highest_resolution()
+                    stream.download(
+                        filename_prefix=f'{index}. ',
+                        output_path=destination_path)
+                    used_urls.append(url)
+                except Exception as exc:
+                    wrong_urls.append(url)
+                    print(f"Exception occurred at line {index + 1}: {url} ")
+                    print(exc)
+            else:
+                print(f"Duplicat occurred at line {index + 1}: {url}")
 
     file.close()
 
