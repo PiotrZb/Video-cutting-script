@@ -2,8 +2,10 @@
 Downloads/*
 Videos/*
 Frames/*
-bfg --replace-text Res/url_list.txt
-bfg --replace-text Res/wrong_url_list.txt
+!.gitkeep
+
+#bfg --replace-text Res/url_list.txt
+#bfg --replace-text Res/wrong_url_list.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
