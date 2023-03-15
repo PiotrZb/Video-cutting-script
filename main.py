@@ -1,16 +1,27 @@
 import cv2 as cv
 from pytube import YouTube
 from pathlib import Path
+import os
 
 local_path = Path(__file__).parent.absolute().__str__()
 
 
+if os.name == 'nt':
+    SAVE_FILES_DESTINATION_PATH = local_path + '\\Downloads'
+    SAVE_WRONG_URL_DESTINATION_PATH = local_path + '\\Res\\wrong_url_list.txt'
+    URL_FILE_PATH = local_path + '\\Res\\url_list.txt'
+else:
+    SAVE_FILES_DESTINATION_PATH = local_path + '/Downloads'
+    SAVE_WRONG_URL_DESTINATION_PATH = local_path + '/Res/wrong_url_list.txt'
+    URL_FILE_PATH = local_path + '/Res/url_list.txt'
+
+
 def displayer(vcp):
     while True:
-        retval,image = vcp.read()
+        retval, image = vcp.read()
 
         if retval:
-            cv.imshow('Movie',image)
+            cv.imshow('Movie', image)
 
             if cv.waitKey(25) == ord('q'): # press q to quit
                 break
@@ -21,22 +32,28 @@ def displayer(vcp):
     cv.destroyAllWindows()
 
 
-def load_all_from_txt(file_path='links.txt',destination_path=local_path):
+def load_all_from_txt(file_path=URL_FILE_PATH, destination_path=SAVE_FILES_DESTINATION_PATH):
 
-    wrongUrls = []
+    wrong_urls = []
 
-    with open(file_path,'r') as file:
-        for url in file.readlines():
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        lines_count = len(lines)
+        for index, url in enumerate(lines):
             try:
-                YouTube(url).streams.get_highest_resolution().download(output_path=destination_path)
+                movie = YouTube(url)
+                print(f"{index + 1} : {lines_count} -> Downloading file: \""
+                      f"{movie.streams[0].title}\"")
+                movie.streams.get_highest_resolution().download(
+                    output_path=destination_path)
             except Exception as exc:
-                wrongUrls.append(url)
+                wrong_urls.append(url)
                 print(exc)
 
     file.close()
 
-    with open(destination_path + '\Wrong urls.txt','w') as file:
-        file.writelines(wrongUrls)
+    with open(SAVE_WRONG_URL_DESTINATION_PATH, 'w') as file:
+        file.writelines(wrong_urls)
 
     file.close()
 
@@ -45,7 +62,7 @@ def main():
 
     # first argument - path to file with links to download
     # second argument - path to folder where movies should be store
-    load_all_from_txt(destination_path='C:\GitHub\Video-cutting-script\pobrane')
+    load_all_from_txt()
 
     # url = 'http://youtube.com/watch?v=2lAe1cqCOXo'
     #
