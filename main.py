@@ -3,20 +3,25 @@ from pytube import YouTube
 from pathlib import Path
 import os
 
-local_path = Path(__file__).parent.absolute().__str__()
+LOCAL_PATH = Path(__file__).parent.absolute().__str__()
 
 
 if os.name == 'nt':
-    SAVE_FILES_DESTINATION_PATH = local_path + '\\Downloads'
-    SAVE_WRONG_URL_DESTINATION_PATH = local_path + '\\Res\\wrong_url_list.txt'
-    URL_FILE_PATH = local_path + '\\Res\\url_list.txt'
+    SAVE_FILES_DESTINATION_PATH = LOCAL_PATH + '\\Downloads'
+    SAVE_WRONG_URL_DESTINATION_PATH = LOCAL_PATH + '\\Res\\wrong_url_list.txt'
+    URL_FILE_PATH = LOCAL_PATH + '\\Res\\url_list.txt'
 else:
-    SAVE_FILES_DESTINATION_PATH = local_path + '/Downloads'
-    SAVE_WRONG_URL_DESTINATION_PATH = local_path + '/Res/wrong_url_list.txt'
-    URL_FILE_PATH = local_path + '/Res/url_list.txt'
+    SAVE_FILES_DESTINATION_PATH = LOCAL_PATH + '/Downloads'
+    SAVE_WRONG_URL_DESTINATION_PATH = LOCAL_PATH + '/Res/wrong_url_list.txt'
+    URL_FILE_PATH = LOCAL_PATH + '/Res/url_list.txt'
 
 
 def displayer(vcp):
+    """
+    vcp -> cv2.VideoCapture object
+    Function displays movie in opencv window.
+    """
+
     while True:
         retval, image = vcp.read()
 
@@ -33,6 +38,11 @@ def displayer(vcp):
 
 
 def load_all_from_txt(file_path=URL_FILE_PATH, destination_path=SAVE_FILES_DESTINATION_PATH):
+    """
+    file_path -> path to the file with url addresses \n
+    destination_path -> path to the file where movies will be store \n
+    Function downloads movies from urls that are stored in txt file.
+    """
 
     wrong_urls = []
     used_urls = []
@@ -66,21 +76,45 @@ def load_all_from_txt(file_path=URL_FILE_PATH, destination_path=SAVE_FILES_DESTI
     file.close()
 
 
+def cut_video(time_span,file_path,destination_path):
+    """
+    time_span -> tuple (start time, stop time) in seconds
+    file_path -> path to the .mp4 file
+    destination_path -> path to the folder where frames will be store
+    some description here
+    """
+
+    start_time, stop_time = time_span
+    vcp = cv.VideoCapture(file_path)
+    fps = int(vcp.get(cv.CAP_PROP_FPS))  # frames per seconds
+    first_frame = fps * start_time
+    last_frame = fps * stop_time
+
+    count = 0
+    for frame_index in range(0,last_frame):
+        read_success, frame = vcp.read()
+
+        if read_success:
+            print(count)
+            if count > first_frame:
+                path = destination_path + f'/frame{count}.png' # or jpg
+                cv.imwrite(path,frame)
+            cv.waitKey(5)
+        count += 1
+    vcp.release()
+
+
 def main():
 
-    # first argument - path to file with links to download
-    # second argument - path to folder where movies should be store
-    load_all_from_txt()
+    #load_all_from_txt()
 
-    # url = 'http://youtube.com/watch?v=2lAe1cqCOXo'
-    #
-    # yt = YouTube(url)
-    # print(yt.title)
+    # UWAGA!!! Nawet krótki przedział czasowy powoduje zapisanie masy plików png, więc jak nie chcecie zasyfić sobie
+    # kompa to polecam ogarnąć dobrze ścieżkę zapisu ... wiem co mówie xd
+    # można dodać linijkę kodu tak aby zapisywane były tylko niektóre klatki z przedziału np. co piąta
+    # filmy na yt mają fps = 30 więc każda sekunda filmu to 30 klatek -> 30 plików .png!!!!
+    cut_video((10,11),'Downloads/pliktestowy.mp4','test')
+    pass
 
-
-    #stream = yt.streams.get_highest_resolution().download()
-
-    #displayer(cv.VideoCapture(stream))
 
 if __name__ == "__main__":
     main()
