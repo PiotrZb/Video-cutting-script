@@ -1,4 +1,5 @@
 import cv2 as cv
+import customtkinter as ctk
 from pytube import YouTube
 from pathlib import Path
 import os
@@ -30,7 +31,6 @@ elif SYSTEM_NAME == 'posix':
 else:
     print("Your system is not supported")
     exit()
-
 
 MENU_OPTIONS = {
     '1': 'Load all videos from .txt file.',
@@ -157,13 +157,59 @@ def cut_video(time_span, file_path, destination_path):
     cap.release()
 
 
-def main():
+class Menu(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.geometry('400x500')
+        self.resizable(False, False)
+        self.title('Menu')
 
-    response = show_menu()
-    if response == '1':
-        load_all_from_txt()
-    elif response == '2':
-        cut_video((10, 11), VIDEOS_FILES_PATH, SAVE_FRAMES_DESTINATION_PATH)
+        self.download_btn = ctk.CTkButton(master=self, text='Download videos', font=ctk.CTkFont(size=30),
+                                          command=self.download_btn_onclick)
+        self.cut_btn = ctk.CTkButton(master=self, text='Cut video', font=ctk.CTkFont(size=30),
+                                     command=self.cut_btn_onclick)
+        self.exit_btn = ctk.CTkButton(master=self, text='Exit', font=ctk.CTkFont(size=30),
+                                      command=self.exit_btn_onclick)
+
+        self.grid_columnconfigure(0, weight=1)
+        self.download_btn.grid(row=1, sticky=ctk.EW, padx=40, pady=15, ipady=15)
+        self.cut_btn.grid(row=2, sticky=ctk.EW, padx=40, pady=15, ipady=15)
+        self.exit_btn.grid(row=3, sticky=ctk.EW, padx=40, pady=15, ipady=15)
+
+        self.grid_rowconfigure(0, weight=0)
+        self.label = ctk.CTkLabel(master=self, text='MENU', font=ctk.CTkFont(size=90, weight='bold'))
+        self.label.grid(row=0, sticky=ctk.N, pady=30)
+
+    def exit_btn_onclick(self):
+        self.destroy()
+
+    def cut_btn_onclick(self):
+        pass
+
+    def download_btn_onclick(self):
+        pass
+
+
+class App:
+    def __init__(self):
+        ctk.set_appearance_mode('dark')
+        ctk.set_default_color_theme('dark-blue')
+
+        self.menu = Menu()
+
+    def run(self):
+        self.menu.mainloop()
+
+
+def main():
+    program = App()
+    program.run()
+
+    # response = show_menu()
+    # if response == '1':
+    #     load_all_from_txt()
+    # elif response == '2':
+    #     cut_video((10, 11), VIDEOS_FILES_PATH, SAVE_FRAMES_DESTINATION_PATH)
 
     # for python >= 3.10
     # match show_menu():
