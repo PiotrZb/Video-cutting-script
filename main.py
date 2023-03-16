@@ -157,37 +157,120 @@ def cut_video(time_span, file_path, destination_path):
     cap.release()
 
 
+class CutWindow(ctk.CTkToplevel):
+    def __init__(self):
+        super().__init__()
+        self.geometry('700x500')
+        self.resizable(False, False)
+        self.title('Extract frames')
+        self.grab_set()  # setting focus on new window
+
+
+class DownloadWindow(ctk.CTkToplevel):
+    def __init__(self):
+        super().__init__()
+
+        self.geometry('700x500')
+        self.resizable(False, False)
+        self.title('Download videos')
+        self.grab_set()  # setting focus on new window
+
+        self.urls = self.load_urls()
+
+        # widgets
+        self.text_box = ctk.CTkTextbox(master=self)
+        self.text_box.insert('1.0', ''.join(self.urls))  # init textBox with ulrs from file
+        self.download_btn = ctk.CTkButton(master=self, text='Download all', font=ctk.CTkFont(size=20),
+                                          command=self.download_btn_onclick)
+
+        # layout
+        self.grid_columnconfigure(0, weight=1)
+        self.text_box.grid(row=0, pady=20, padx=20, sticky=ctk.NSEW)
+        self.download_btn.grid(row=1, column=0, pady=20, padx=20)
+
+    # methods
+    def load_urls(self):
+        try:
+            with open(URL_FILE_PATH, 'r') as file:
+                return file.readlines()
+        except Exception:
+            print('Wrong file path (load_urls)')
+            print(Exception)
+
+    # onClick methods
+    def download_btn_onclick(self):
+        lines = self.text_box.get('1.0', ctk.END).split('\n')
+
+        wrong_urls = []
+        used_urls = []
+
+        lines_count = len(lines)
+        for index, url in enumerate(lines):
+            if url not in used_urls:
+                try:
+                    movie = YouTube(url)
+                    print(f"{index + 1} : {lines_count} -> Downloading file: \""
+                          f"{movie.streams[0].title}\"")
+                    stream = movie.streams.get_highest_resolution()
+                    stream.download(
+                        filename_prefix=f'{index}. ',
+                        output_path=SAVE_FILES_DESTINATION_PATH)
+                    used_urls.append(url)
+                except Exception as exc:
+                    wrong_urls.append(url + '\n')
+                    print(f"Exception occurred at line {index + 1}: {url} ")
+                    print(exc)
+            else:
+                print(f"Duplicat occurred at line {index + 1}: {url}")
+
+        with open(SAVE_WRONG_URL_DESTINATION_PATH, 'w') as file:
+            file.writelines(wrong_urls)
+
+
 class Menu(ctk.CTk):
     def __init__(self):
         super().__init__()
+
         self.geometry('400x500')
         self.resizable(False, False)
         self.title('Menu')
 
+        # widgets
         self.download_btn = ctk.CTkButton(master=self, text='Download videos', font=ctk.CTkFont(size=30),
                                           command=self.download_btn_onclick)
         self.cut_btn = ctk.CTkButton(master=self, text='Cut video', font=ctk.CTkFont(size=30),
                                      command=self.cut_btn_onclick)
         self.exit_btn = ctk.CTkButton(master=self, text='Exit', font=ctk.CTkFont(size=30),
                                       command=self.exit_btn_onclick)
+        self.label = ctk.CTkLabel(master=self, text='MENU', font=ctk.CTkFont(size=90, weight='bold'))
 
+        # layout
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=0)
         self.download_btn.grid(row=1, sticky=ctk.EW, padx=40, pady=15, ipady=15)
         self.cut_btn.grid(row=2, sticky=ctk.EW, padx=40, pady=15, ipady=15)
         self.exit_btn.grid(row=3, sticky=ctk.EW, padx=40, pady=15, ipady=15)
-
-        self.grid_rowconfigure(0, weight=0)
-        self.label = ctk.CTkLabel(master=self, text='MENU', font=ctk.CTkFont(size=90, weight='bold'))
         self.label.grid(row=0, sticky=ctk.N, pady=30)
 
+        # other windows
+        self.download_win = None
+        self.cut_win = None
+
+    # onClick methods
     def exit_btn_onclick(self):
         self.destroy()
 
     def cut_btn_onclick(self):
-        pass
+        if self.cut_win is None or not self.cut_win.winfo_exists():
+            self.cut_win = CutWindow()
+        else:
+            self.cut_win.focus()
 
     def download_btn_onclick(self):
-        pass
+        if self.download_win is None or not self.download_win.winfo_exists():
+            self.download_win = DownloadWindow()
+        else:
+            self.download_win.focus()
 
 
 class App:
@@ -204,29 +287,6 @@ class App:
 def main():
     program = App()
     program.run()
-
-    # response = show_menu()
-    # if response == '1':
-    #     load_all_from_txt()
-    # elif response == '2':
-    #     cut_video((10, 11), VIDEOS_FILES_PATH, SAVE_FRAMES_DESTINATION_PATH)
-
-    # for python >= 3.10
-    # match show_menu():
-    #     case '1':
-    #         load_all_from_txt()
-    #     case '2':
-    #         cut_video((10, 11), VIDEOS_FILES_PATH,
-    #         SAVE_FRAMES_DESTINATION_PATH)
-
-    # UWAGA!!! Nawet krótki przedział czasowy powoduje zapisanie
-    # masy plików png, więc jak nie chcecie zasyfić sobie
-    # kompa to polecam ogarnąć dobrze ścieżkę zapisu ... wiem co mówie xd
-    # można dodać linijkę kodu tak aby zapisywane były
-    # tylko niektóre klatki z przedziału np. co piąta
-    # filmy na yt mają fps = 30 więc każda sekunda
-    # filmu to 30 klatek -> 30 plików .PNG
-    pass
 
 
 if __name__ == "__main__":
