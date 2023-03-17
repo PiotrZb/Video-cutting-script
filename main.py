@@ -170,34 +170,58 @@ class DownloadWindow(ctk.CTkToplevel):
     def __init__(self):
         super().__init__()
 
-        self.geometry('700x500')
+        self.geometry('700x600')
         self.resizable(False, False)
         self.title('Download videos')
         self.grab_set()  # setting focus on new window
 
-        self.urls = self.load_urls()
+        self.urls, self.wrong_urls = self.load_urls()
 
         # widgets
-        self.text_box = ctk.CTkTextbox(master=self)
+        self.text_box = ctk.CTkTextbox(master=self, height=150)
         self.text_box.insert('1.0', ''.join(self.urls))  # init textBox with ulrs from file
         self.download_btn = ctk.CTkButton(master=self, text='Download all', font=ctk.CTkFont(size=20),
-                                          command=self.download_btn_onclick)
+                                          command=self.download_btn_onclick, width=200, height=50)
+
+        self.exit_btn = ctk.CTkButton(master=self, text='Exit', font=ctk.CTkFont(size=20),
+                                      command=self.exit_btn_onclick, width=200, height=50)
+        self.text_box2 = ctk.CTkTextbox(master=self, height=100)
+        self.text_box2.insert('1.0', ''.join(self.wrong_urls))
+        self.label1 = ctk.CTkLabel(master=self, text='Wrong urls', font=ctk.CTkFont(size=20, weight='bold'),height=10)
+        self.terminal = ctk.CTkTextbox(master=self, height=100)
+        self.terminal.configure(state='disabled')
 
         # layout
         self.grid_columnconfigure(0, weight=1)
-        self.text_box.grid(row=0, pady=20, padx=20, sticky=ctk.NSEW)
-        self.download_btn.grid(row=1, column=0, pady=20, padx=20)
+        self.grid_columnconfigure(1, weight=1)
+        self.text_box.grid(row=0, columnspan=2, pady=20, padx=20, sticky=ctk.NSEW)
+        self.label1.grid(row=1, columnspan=2, pady=10, sticky=ctk.S)
+        self.text_box2.grid(row=2, columnspan=2, pady=20, padx=20, sticky=ctk.NSEW)
+        self.terminal.grid(row=3, columnspan=2, pady=20, padx=20, sticky=ctk.NSEW)
+        self.download_btn.grid(row=4, column=0, pady=20, padx=20)
+        self.exit_btn.grid(row=4, column=1, pady=20, padx=20)
 
     # methods
     def load_urls(self):
         try:
             with open(URL_FILE_PATH, 'r') as file:
-                return file.readlines()
-        except Exception:
-            print('Wrong file path (load_urls)')
-            print(Exception)
+                urls = file.readlines()
+            with open(SAVE_WRONG_URL_DESTINATION_PATH, 'r') as file:
+                wrong_urls = file.readlines()
+        except Exception as e:
+            self.update_terminal('Wrong file path (load_urls)')
+            self.update_terminal(str(e))
+        return urls, wrong_urls
+
+    def update_terminal(self, message):
+        self.terminal.configure(state='normal')
+        self.terminal.insert(ctk.END, message + '\n')
+        self.terminal.configure(state='disabled')
 
     # onClick methods
+    def exit_btn_onclick(self):
+        self.destroy()
+
     def download_btn_onclick(self):
         lines = self.text_box.get('1.0', ctk.END).split('\n')
 
@@ -209,8 +233,7 @@ class DownloadWindow(ctk.CTkToplevel):
             if url not in used_urls:
                 try:
                     movie = YouTube(url)
-                    print(f"{index + 1} : {lines_count} -> Downloading file: \""
-                          f"{movie.streams[0].title}\"")
+                    self.update_terminal(f"{index + 1} : {lines_count} -> Downloading file: {movie.streams[0].title}")
                     stream = movie.streams.get_highest_resolution()
                     stream.download(
                         filename_prefix=f'{index}. ',
@@ -218,10 +241,10 @@ class DownloadWindow(ctk.CTkToplevel):
                     used_urls.append(url)
                 except Exception as exc:
                     wrong_urls.append(url + '\n')
-                    print(f"Exception occurred at line {index + 1}: {url} ")
-                    print(exc)
+                    self.update_terminal(f'Exception occurred at line {index + 1}: {url}')
+                    self.update_terminal(str(exc))
             else:
-                print(f"Duplicat occurred at line {index + 1}: {url}")
+                self.update_terminal(f'Duplicat occurred at line {index + 1}: {url}')
 
         with open(SAVE_WRONG_URL_DESTINATION_PATH, 'w') as file:
             file.writelines(wrong_urls)
