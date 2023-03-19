@@ -160,10 +160,73 @@ def cut_video(time_span, file_path, destination_path):
 class CutWindow(ctk.CTkToplevel):
     def __init__(self):
         super().__init__()
-        self.geometry('700x500')
+        self.geometry('700x450')
         self.resizable(False, False)
         self.title('Extract frames')
         self.grab_set()  # setting focus on new window
+
+        self.files = os.listdir(SAVE_FILES_DESTINATION_PATH)
+        self.selected_file = ''
+
+        # widgets
+        self.cm_box = ctk.CTkComboBox(master=self, values=self.files, state='readonly', command=self.cmbox_callback,
+                                      width=500)
+        self.cm_box.set('')
+        self.progress_bar = ctk.CTkProgressBar(master=self, height=20, width=500)
+        self.progress_bar.set(0)
+        self.start_time_txtbox = ctk.CTkTextbox(master=self, height=10)
+        self.end_time_txtbox = ctk.CTkTextbox(master=self, height=10)
+        self.extract_frames_btn = ctk.CTkButton(master=self, text='Extract frames', font=ctk.CTkFont(size=20),
+                                                width=200, height=50, command=self.extract_frames_btn_onclick)
+        self.exit_btn = ctk.CTkButton(master=self, text='Exit', font=ctk.CTkFont(size=20), width=200, height=50,
+                                      command=self.exit_btn_onclick)
+        self.label1 = ctk.CTkLabel(master=self, text='Start time [s]')
+        self.label2 = ctk.CTkLabel(master=self, text='End time [s]')
+
+        # layout
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.cm_box.grid(row=0, column=0, pady=20, padx=20, columnspan=2)
+        self.label1.grid(row=1, column=0, pady=10, padx=20, sticky=ctk.S)
+        self.label2.grid(row=1, column=1, pady=10, padx=20, sticky=ctk.S)
+        self.progress_bar.grid(row=4, column=0, pady=20, padx=20, columnspan=2)
+        self.start_time_txtbox.grid(row=2, column=0, pady=20, padx=20)
+        self.end_time_txtbox.grid(row=2, column=1, pady=20, padx=20)
+        self.extract_frames_btn.grid(row=3, column=0, columnspan=2, pady=20, padx=20)
+        self.exit_btn.grid(row=5, column=1, pady=20, padx=20)
+
+    # methods
+    def cmbox_callback(self, choice):
+        self.selected_file = choice
+
+    # onClick methods
+    def exit_btn_onclick(self):
+        self.destroy()
+
+    def extract_frames_btn_onclick(self):
+
+        try:
+            start_time = int(self.start_time_txtbox.get('1.0', ctk.END))
+            stop_time = int(self.end_time_txtbox.get('1.0', ctk.END))
+            cap = cv.VideoCapture(SAVE_FILES_DESTINATION_PATH + '/' + self.selected_file)
+            fps = int(cap.get(cv.CAP_PROP_FPS))  # frames per seconds
+            first_frame = fps * start_time
+            last_frame = fps * stop_time
+
+            for frame_index in range(0, last_frame):
+                read_success, frame = cap.read()
+
+                if read_success:
+                    if frame_index > first_frame:
+                        # PNG or JPG format
+                        path = SAVE_FRAMES_DESTINATION_PATH + f'/frame{frame_index}.png'
+                        cv.imwrite(path, frame)
+                    cv.waitKey(5)
+
+                self.progress_bar.set(frame_index / (last_frame - first_frame))
+            cap.release()
+        except Exception as exc:
+            print(exc)
 
 
 class DownloadWindow(ctk.CTkToplevel):
