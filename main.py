@@ -182,24 +182,32 @@ class DownloadWindow(ctk.CTkToplevel):
         self.text_box.insert('1.0', ''.join(self.urls))  # init textBox with ulrs from file
         self.download_btn = ctk.CTkButton(master=self, text='Download all', font=ctk.CTkFont(size=20),
                                           command=self.download_btn_onclick, width=200, height=50)
-
         self.exit_btn = ctk.CTkButton(master=self, text='Exit', font=ctk.CTkFont(size=20),
                                       command=self.exit_btn_onclick, width=200, height=50)
+        self.save_btn = ctk.CTkButton(master=self, text='Save', font=ctk.CTkFont(size=20),
+                                      command=self.save_btn_onclick, width=200, height=50)
         self.text_box2 = ctk.CTkTextbox(master=self, height=100)
         self.text_box2.insert('1.0', ''.join(self.wrong_urls))
-        self.label1 = ctk.CTkLabel(master=self, text='Wrong urls', font=ctk.CTkFont(size=20, weight='bold'),height=10)
+        self.label1 = ctk.CTkLabel(master=self, text='Wrong urls', font=ctk.CTkFont(size=20, weight='bold'), height=10)
+        self.label2 = ctk.CTkLabel(master=self, text='Urls', font=ctk.CTkFont(size=20, weight='bold'), height=10)
+        self.label3 = ctk.CTkLabel(master=self, text='Terminal', font=ctk.CTkFont(size=20, weight='bold'), height=10)
         self.terminal = ctk.CTkTextbox(master=self, height=100)
         self.terminal.configure(state='disabled')
 
         # layout
         self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
-        self.text_box.grid(row=0, columnspan=2, pady=20, padx=20, sticky=ctk.NSEW)
-        self.label1.grid(row=1, columnspan=2, pady=10, sticky=ctk.S)
-        self.text_box2.grid(row=2, columnspan=2, pady=20, padx=20, sticky=ctk.NSEW)
-        self.terminal.grid(row=3, columnspan=2, pady=20, padx=20, sticky=ctk.NSEW)
-        self.download_btn.grid(row=4, column=0, pady=20, padx=20)
-        self.exit_btn.grid(row=4, column=1, pady=20, padx=20)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(5, weight=1)
+        self.label2.grid(row=0, sticky=ctk.S, pady=5)
+        self.text_box.grid(row=1, sticky=ctk.NSEW, pady=10, padx=10)
+        self.label1.grid(row=2, sticky=ctk.S)
+        self.text_box2.grid(row=3, sticky=ctk.NSEW, pady=10, padx=10)
+        self.label3.grid(row=4, sticky=ctk.S)
+        self.terminal.grid(row=5, sticky=ctk.NSEW, pady=10, padx=10)
+        self.download_btn.grid(row=1, column=1, padx=20)
+        self.save_btn.grid(row=3, column=1, padx=20)
+        self.exit_btn.grid(row=5, column=1, padx=20)
 
     # methods
     def load_urls(self):
@@ -211,7 +219,7 @@ class DownloadWindow(ctk.CTkToplevel):
         except Exception as e:
             self.update_terminal('Wrong file path (load_urls)')
             self.update_terminal(str(e))
-        return urls, wrong_urls
+        return [x for x in urls if x != '\n'], [x for x in wrong_urls if x != '\n']
 
     def update_terminal(self, message):
         self.terminal.configure(state='normal')
@@ -222,10 +230,20 @@ class DownloadWindow(ctk.CTkToplevel):
     def exit_btn_onclick(self):
         self.destroy()
 
+    def save_btn_onclick(self):
+        self.urls = self.text_box.get('1.0', ctk.END).splitlines(True)
+        self.wrong_urls = self.text_box2.get('1.0', ctk.END).splitlines(True)
+
+        with open(SAVE_WRONG_URL_DESTINATION_PATH, 'w') as file:
+            file.writelines([x for x in self.wrong_urls if x != '\n'])
+
+        with open(URL_FILE_PATH, 'w') as file:
+            file.writelines([x for x in self.urls if x != '\n'])
+
     def download_btn_onclick(self):
         lines = self.text_box.get('1.0', ctk.END).split('\n')
+        self.text_box2.delete('1.0', ctk.END)
 
-        wrong_urls = []
         used_urls = []
 
         lines_count = len(lines)
@@ -240,14 +258,13 @@ class DownloadWindow(ctk.CTkToplevel):
                         output_path=SAVE_FILES_DESTINATION_PATH)
                     used_urls.append(url)
                 except Exception as exc:
-                    wrong_urls.append(url + '\n')
+                    self.wrong_urls.append(url + '\n')
                     self.update_terminal(f'Exception occurred at line {index + 1}: {url}')
                     self.update_terminal(str(exc))
             else:
                 self.update_terminal(f'Duplicat occurred at line {index + 1}: {url}')
 
-        with open(SAVE_WRONG_URL_DESTINATION_PATH, 'w') as file:
-            file.writelines(wrong_urls)
+        self.text_box2.insert('1.0', ''.join(self.wrong_urls))
 
 
 class Menu(ctk.CTk):
