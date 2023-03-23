@@ -3,53 +3,60 @@ from pathlib import Path
 
 
 class PathManager:
-    LOCAL_PATH = Path(__file__).parent.absolute().__str__()
+    _LOCAL_PATH = Path(__file__).parent.absolute().__str__()
 
-    SYSTEM_NAME = os.name
+    _CURRENT_SYSTEM_NAME = os.name
 
-    SAVE_FILES_DESTINATION_PATH = LOCAL_PATH
-    SAVE_WRONG_URL_DESTINATION_PATH = LOCAL_PATH
-    URL_FILE_PATH = LOCAL_PATH
-    SAVE_FRAMES_DESTINATION_PATH = LOCAL_PATH
-    VIDEOS_FILES_PATH = LOCAL_PATH
+    _SAVE_FILES_DESTINATION_PATH = _LOCAL_PATH
+    _SAVE_WRONG_URL_DESTINATION_PATH = _LOCAL_PATH
+    _URL_FILE_PATH = _LOCAL_PATH
+    _SAVE_FRAMES_DESTINATION_PATH = _LOCAL_PATH
+    _VIDEOS_FILES_PATH = _LOCAL_PATH
 
-    if SYSTEM_NAME == 'nt':
-        SAVE_FILES_DESTINATION_PATH = LOCAL_PATH + '\\Downloads'
-        SAVE_WRONG_URL_DESTINATION_PATH = LOCAL_PATH + '\\Res\\wrong_url_list.txt'
-        URL_FILE_PATH = LOCAL_PATH + '\\Res\\url_list.txt'
-        SAVE_FRAMES_DESTINATION_PATH = LOCAL_PATH + '\\Frames'
+    if _CURRENT_SYSTEM_NAME == 'nt':
+        _SAVE_FILES_DESTINATION_PATH += '\\Downloads'
+        _SAVE_WRONG_URL_DESTINATION_PATH += '\\Res\\wrong_url_list.txt'
+        _URL_FILE_PATH += '\\Res\\url_list.txt'
+        _SAVE_FRAMES_DESTINATION_PATH += '\\Frames'
         # TODO PATH TO CHANGE
-        VIDEOS_FILES_PATH = LOCAL_PATH + '\\Videos\\test_file.mp4'
-    elif SYSTEM_NAME == 'posix':
-        SAVE_FILES_DESTINATION_PATH = LOCAL_PATH + '/Downloads'
-        SAVE_WRONG_URL_DESTINATION_PATH = LOCAL_PATH + '/Res/wrong_url_list.txt'
-        URL_FILE_PATH = LOCAL_PATH + '/Res/url_list.txt'
-        SAVE_FRAMES_DESTINATION_PATH = LOCAL_PATH + '/Frames'
+        _VIDEOS_FILES_PATH += '\\Videos\\test_file.mp4'
+    elif _CURRENT_SYSTEM_NAME == 'posix':
+        _SAVE_FILES_DESTINATION_PATH += '/Downloads'
+        _SAVE_WRONG_URL_DESTINATION_PATH += '/Res/wrong_url_list.txt'
+        _URL_FILE_PATH += '/Res/url_list.txt'
+        _SAVE_FRAMES_DESTINATION_PATH += '/Frames'
         # TODO PATH TO CHANGE
-        VIDEOS_FILES_PATH = LOCAL_PATH + '/Videos/test_file.mp4'
+        _VIDEOS_FILES_PATH += '/Videos/test_file.mp4'
     else:
         print("Your system is not supported")
         exit()
 
+    @property
     def get_files_destination_path(self):
-        return self.SAVE_FILES_DESTINATION_PATH
+        return self._SAVE_FILES_DESTINATION_PATH
 
+    @property
     def get_wrong_url_destination_path(self):
-        return self.SAVE_WRONG_URL_DESTINATION_PATH
+        return self._SAVE_WRONG_URL_DESTINATION_PATH
 
+    @property
     def get_url_file_path(self):
-        return self.URL_FILE_PATH
+        return self._URL_FILE_PATH
 
+    @property
     def get_frames_destination_path(self):
-        return self.SAVE_FRAMES_DESTINATION_PATH
+        return self._SAVE_FRAMES_DESTINATION_PATH
 
+    @property
     def get_video_files_path(self):
-        return self.VIDEOS_FILES_PATH
+        return self._VIDEOS_FILES_PATH
 
+    @property
     def get_system_name(self):
-        return self.SYSTEM_NAME
+        return self._CURRENT_SYSTEM_NAME
 
+    @property
     def get_local_path(self):
-        return self.LOCAL_PATH
+        return self._LOCAL_PATH
 
 

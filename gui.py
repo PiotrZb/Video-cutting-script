@@ -3,6 +3,7 @@ import os
 from pathmanager import PathManager
 from pytube import YouTube
 import cv2 as cv
+import sys
 
 
 VIDEO_FILE_EXTENSIONS = ('.mp4', '.m4v', '.m4p')
@@ -19,7 +20,7 @@ class CutWindow(ctk.CTkToplevel):
 		self.grab_set()  # setting focus on new window
 
 		files_path = []
-		for file in os.listdir(path_manager.get_files_destination_path()):
+		for file in os.listdir(path_manager.get_files_destination_path):
 			if file.endswith(VIDEO_FILE_EXTENSIONS):
 				files_path.append(file)
 
@@ -76,7 +77,7 @@ class CutWindow(ctk.CTkToplevel):
 			start_time = int(self.start_time_txtbox.get('1.0', ctk.END))
 			stop_time = int(self.end_time_txtbox.get('1.0', ctk.END))
 			cap = cv.VideoCapture(
-				path_manager.get_files_destination_path() + '/' + self.selected_file)
+				path_manager.get_files_destination_path + '/' + self.selected_file)
 			fps = int(cap.get(cv.CAP_PROP_FPS))  # frames per seconds
 			first_frame = fps * start_time
 			last_frame = fps * stop_time
@@ -87,7 +88,7 @@ class CutWindow(ctk.CTkToplevel):
 				if read_success:
 					if frame_index > first_frame:
 						# PNG or JPG format
-						path = path_manager.get_frames_destination_path() + f'/frame{frame_index}.png'
+						path = path_manager.get_frames_destination_path + f'/frame{frame_index}.png'
 						cv.imwrite(path, frame)
 					cv.waitKey(5)
 
@@ -156,9 +157,9 @@ class DownloadWindow(ctk.CTkToplevel):
 	# methods
 	def load_urls(self):
 		try:
-			with open(path_manager.get_url_file_path(), 'r') as file:
+			with open(path_manager.get_url_file_path, 'r') as file:
 				urls = file.readlines()
-			with open(path_manager.get_wrong_url_destination_path(), 'r') as file:
+			with open(path_manager.get_wrong_url_destination_path, 'r') as file:
 				wrong_urls = file.readlines()
 		except Exception as e:
 			self.update_terminal('Wrong file path (load_urls)')
@@ -171,6 +172,7 @@ class DownloadWindow(ctk.CTkToplevel):
 		self.terminal.insert(ctk.END, message + '\n')
 		self.terminal.configure(state='disabled')
 
+
 	# onClick methods
 	def exit_btn_onclick(self):
 		self.destroy()
@@ -179,10 +181,10 @@ class DownloadWindow(ctk.CTkToplevel):
 		self.urls = self.text_box.get('1.0', ctk.END).splitlines(True)
 		self.wrong_urls = self.text_box2.get('1.0', ctk.END).splitlines(True)
 
-		with open(path_manager.get_wrong_url_destination_path(), 'w') as file:
+		with open(path_manager.get_wrong_url_destination_path, 'w') as file:
 			file.writelines([x for x in self.wrong_urls if x != '\n'])
 
-		with open(path_manager.get_url_file_path(), 'w') as file:
+		with open(path_manager.get_url_file_path, 'w') as file:
 			file.writelines([x for x in self.urls if x != '\n'])
 
 	def download_btn_onclick(self):
@@ -196,13 +198,14 @@ class DownloadWindow(ctk.CTkToplevel):
 			if url not in used_urls:
 				try:
 					movie = YouTube(url)
+
 					self.update_terminal(
 						f"{index + 1} : {lines_count} -> Downloading file:"
 						f" {movie.streams[0].title}")
 					stream = movie.streams.get_highest_resolution()
 					stream.download(
 						filename_prefix=f'{index}. ',
-						output_path=path_manager.get_files_destination_path())
+						output_path=path_manager.get_files_destination_path)
 					used_urls.append(url)
 				except Exception as exc:
 					self.wrong_urls.append(url + '\n')

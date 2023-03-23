@@ -16,9 +16,9 @@ MENU_OPTIONS = {
 
 
 def clear_console():
-	if path_manager.SYSTEM_NAME == 'posix':
+	if path_manager.get_system_name == 'posix':
 		_ = os.system('clear')
-	elif path_manager.SYSTEM_NAME == 'nt':
+	elif path_manager.get_system_name == 'nt':
 		_ = os.system('cls')
 	else:
 		return False
@@ -65,8 +65,8 @@ def displayer(cap):
 	cv.destroyAllWindows()
 
 
-def load_all_from_txt(file_path=path_manager.get_url_file_path(),
-                      destination_path=path_manager.get_files_destination_path()):
+def load_all_from_txt(file_path=path_manager.get_url_file_path,
+                      destination_path=path_manager.get_files_destination_path):
 	"""
     file_path -> path to the file with url addresses
     destination_path -> path to the file where movies will be store
@@ -99,7 +99,7 @@ def load_all_from_txt(file_path=path_manager.get_url_file_path(),
 
 	file.close()
 
-	with open(path_manager.get_wrong_url_destination_path(), 'w') as file:
+	with open(path_manager.get_wrong_url_destination_path, 'w') as file:
 		file.writelines(wrong_urls)
 
 	file.close()
