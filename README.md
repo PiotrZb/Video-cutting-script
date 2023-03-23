@@ -14,8 +14,7 @@ $ /usr/sbin/softwareupdate --install-rosetta --agree-to-license
 After installing Rosetta2 above you can then use the Homebrew cmd and install Homebrew for ARM M1 chip: 
 
 ```
-$ arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.
-com/Homebrew/install/master/install.sh)"
+$ arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 ```
 
 Install Tkinter using Homebrew
@@ -29,9 +28,7 @@ $ arch -x86_64 brew install python-tk
 Install Homebrew
 
 ``` 
-$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.
-com/Homebrew/install/HEAD/install.sh)"
-
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 You will need to install Tkinter using Homebrew
