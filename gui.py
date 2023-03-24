@@ -68,11 +68,6 @@ class CutWindow(ctk.CTkToplevel):
         self.start_time_txtbox = ctk.CTkTextbox(master=self, height=10)
         self.end_time_txtbox = ctk.CTkTextbox(master=self, height=10)
 
-        # self.start_time_txtbox.grid(row=2, column=0, pady=20, padx=20)
-        # self.end_time_txtbox.grid(row=2, column=1, pady=20, padx=20)
-
-        # Text boxes labels
-
         # Sliders
         self.slider_start = ctk.CTkSlider(master=self, from_=self.slider_start_min, to=self.slider_start_max,
                                           command=self.slider_start_event, width=self._WINDOW_WIDTH - 200,
@@ -176,7 +171,6 @@ class CutWindow(ctk.CTkToplevel):
             for frame_index in range(int(first_frame), int(last_frame)):
                 read_success, frame = self.cap.read()
                 self.progress_bar.set((frame_index - first_frame + 1) / total_frames)
-                print(f'{round(round((frame_index - first_frame + 1) / total_frames, 2) * 100)}%')
                 if read_success:
                     if frame_index > first_frame:
                         # 	# PNG or JPG format
@@ -218,6 +212,7 @@ class CutWindow(ctk.CTkToplevel):
         cv.destroyAllWindows()
 
     def extract_frames_btn_onclick(self):
+        self.progress_bar.set(0)
         thread_extract_frames = threading.Thread(target=self.extract_frames())
         thread_extract_frames.start()
         thread_extract_frames.join()
