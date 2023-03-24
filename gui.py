@@ -135,8 +135,13 @@ class CutWindow(ctk.CTkToplevel):
         self.slider_end.set(self.video_end_time_max)
         self.label_end_time.configure(text=f'End time {self.slider_end.get()} s')
 
+    def release_cap(self):
+        if self.cap is not None:
+            self.cap.release()
+
     def cmbox_callback(self, choice):
         self.selected_file = choice
+        self.release_cap()
         try:
             # Get video data
             self.cap = cv.VideoCapture(
@@ -183,7 +188,7 @@ class CutWindow(ctk.CTkToplevel):
     # onClick methods
     def exit_btn_onclick(self):
         self.destroy()
-        self.cap.release()
+        self.release_cap()
         cv.destroyAllWindows()
 
     def extract_frames_btn_onclick(self):
@@ -198,12 +203,13 @@ class CutWindow(ctk.CTkToplevel):
             for frame_index in range(int(first_frame), int(last_frame)):
                 read_success, frame = self.cap.read()
                 self.progress_bar.set((frame_index - first_frame + 1) / total_frames)
+                print(f'{round(round((frame_index - first_frame + 1) / total_frames, 2) * 100)}%')
                 if read_success:
                     if frame_index > first_frame:
                         # 	# PNG or JPG format
                         path = path_manager.get_frames_destination_path + f'/frame{frame_index}.png'
                         cv.imwrite(path, frame)
-                    cv.waitKey(5)
+                    # cv.waitKey(5)
             self.slider_end.configure(state='normal')
             self.slider_start.configure(state='normal')
         except Exception as exc:
