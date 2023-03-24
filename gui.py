@@ -5,6 +5,7 @@ from pytube import YouTube
 import cv2 as cv
 import math
 import numpy as np
+import threading
 
 VIDEO_FILE_EXTENSIONS = ('.mp4', '.m4v', '.m4p')
 
@@ -110,6 +111,8 @@ class CutWindow(ctk.CTkToplevel):
         self.progress_bar.set(0)
         self.progress_bar.grid(row=7, column=0, pady=20, padx=20, columnspan=2)
 
+        self.protocol("WM_DELETE_WINDOW", self.exit_btn_onclick)
+
     # methods
     def read_current_frame(self, frame_position=0):
         self.cap.set(cv.CAP_PROP_POS_FRAMES, frame_position)
@@ -162,6 +165,29 @@ class CutWindow(ctk.CTkToplevel):
         except Exception as exc:
             print(exc)
 
+    def extract_frames(self):
+        try:
+            first_frame = self.slider_start.get() * self.fps
+            last_frame = self.slider_end.get() * self.fps
+            total_frames = last_frame - first_frame
+            self.slider_end.configure(state='disabled')
+            self.slider_start.configure(state='disabled')
+            self.cap.set(cv.CAP_PROP_POS_FRAMES, first_frame)
+            for frame_index in range(int(first_frame), int(last_frame)):
+                read_success, frame = self.cap.read()
+                self.progress_bar.set((frame_index - first_frame + 1) / total_frames)
+                print(f'{round(round((frame_index - first_frame + 1) / total_frames, 2) * 100)}%')
+                if read_success:
+                    if frame_index > first_frame:
+                        # 	# PNG or JPG format
+                        path = path_manager.get_frames_destination_path + f'/frame{frame_index}.png'
+                        cv.imwrite(path, frame)
+                    # cv.waitKey(5)
+            self.slider_end.configure(state='normal')
+            self.slider_start.configure(state='normal')
+        except Exception as exc:
+            print(exc)
+
     # Events Slider
     def slider_start_event(self, value):
         self.slider_end_min = value + 1
@@ -192,28 +218,9 @@ class CutWindow(ctk.CTkToplevel):
         cv.destroyAllWindows()
 
     def extract_frames_btn_onclick(self):
-        self.progress_bar.set(0)
-        try:
-            first_frame = self.slider_start.get() * self.fps
-            last_frame = self.slider_end.get() * self.fps
-            total_frames = last_frame - first_frame
-            self.slider_end.configure(state='disabled')
-            self.slider_start.configure(state='disabled')
-            self.cap.set(cv.CAP_PROP_POS_FRAMES, first_frame)
-            for frame_index in range(int(first_frame), int(last_frame)):
-                read_success, frame = self.cap.read()
-                self.progress_bar.set((frame_index - first_frame + 1) / total_frames)
-                print(f'{round(round((frame_index - first_frame + 1) / total_frames, 2) * 100)}%')
-                if read_success:
-                    if frame_index > first_frame:
-                        # 	# PNG or JPG format
-                        path = path_manager.get_frames_destination_path + f'/frame{frame_index}.png'
-                        cv.imwrite(path, frame)
-                    # cv.waitKey(5)
-            self.slider_end.configure(state='normal')
-            self.slider_start.configure(state='normal')
-        except Exception as exc:
-            print(exc)
+        thread_extract_frames = threading.Thread(target=self.extract_frames())
+        thread_extract_frames.start()
+        thread_extract_frames.join()
 
 
 class DownloadWindow(ctk.CTkToplevel):
@@ -271,6 +278,8 @@ class DownloadWindow(ctk.CTkToplevel):
         self.download_btn.grid(row=1, column=1, padx=20)
         self.save_btn.grid(row=3, column=1, padx=20)
         self.exit_btn.grid(row=5, column=1, padx=20)
+
+        self.protocol("WM_DELETE_WINDOW", self.exit_btn_onclick)
 
     # methods
     def load_urls(self):
@@ -368,6 +377,8 @@ class Menu(ctk.CTk):
         # other windows
         self.download_win = None
         self.cut_win = None
+
+        self.protocol("WM_DELETE_WINDOW", self.exit_btn_onclick)
 
     # onClick methods
     def exit_btn_onclick(self):
