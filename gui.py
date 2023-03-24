@@ -12,6 +12,35 @@ VIDEO_FILE_EXTENSIONS = ('.mp4', '.m4v', '.m4p')
 path_manager = PathManager()
 
 
+class FrameLabelingWindow(ctk.CTkToplevel):
+    def __init__(self):
+        super().__init__()
+
+        # Window settings
+        self._WINDOW_WIDTH = 700
+        self._WINDOW_HEIGHT = 600
+
+        self.geometry(f'{self._WINDOW_WIDTH}x{self._WINDOW_HEIGHT}')
+        self.resizable(False, False)
+        self.title('Frame labeling tool')
+        self.grab_set()  # setting focus on new window
+
+        # Widgets
+        self.exit_btn = ctk.CTkButton(master=self, text='Exit',
+                                      font=ctk.CTkFont(size=20),
+                                      width=200, height=50,
+                                      command=self.exit_btn_onclick)
+
+        # Layout
+        self.exit_btn.grid(row=1, column=1, pady=20, padx=20)
+
+        # Methods
+        # OnClick methods
+
+    def exit_btn_onclick(self):
+        self.destroy()
+
+
 class CutWindow(ctk.CTkToplevel):
     def __init__(self):
         super().__init__()
@@ -344,7 +373,7 @@ class Menu(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.geometry('400x500')
+        self.geometry('400x600')
         self.resizable(False, False)
         self.title('Menu')
 
@@ -355,6 +384,9 @@ class Menu(ctk.CTk):
         self.cut_btn = ctk.CTkButton(master=self, text='Cut video',
                                      font=ctk.CTkFont(size=30),
                                      command=self.cut_btn_onclick)
+        self.label_btn = ctk.CTkButton(master=self, text='Labeling tool',
+                                       font=ctk.CTkFont(size=30),
+                                       command=self.label_btn_onclick)
         self.exit_btn = ctk.CTkButton(master=self, text='Exit',
                                       font=ctk.CTkFont(size=30),
                                       command=self.exit_btn_onclick)
@@ -366,12 +398,14 @@ class Menu(ctk.CTk):
         self.grid_rowconfigure(0, weight=0)
         self.download_btn.grid(row=1, sticky=ctk.EW, padx=40, pady=15, ipady=15)
         self.cut_btn.grid(row=2, sticky=ctk.EW, padx=40, pady=15, ipady=15)
-        self.exit_btn.grid(row=3, sticky=ctk.EW, padx=40, pady=15, ipady=15)
+        self.label_btn.grid(row=3, sticky=ctk.EW, padx=40, pady=15, ipady=15)
+        self.exit_btn.grid(row=4, sticky=ctk.EW, padx=40, pady=15, ipady=15)
         self.label.grid(row=0, sticky=ctk.N, pady=30)
 
         # other windows
         self.download_win = None
         self.cut_win = None
+        self.label_win = None
 
         self.protocol("WM_DELETE_WINDOW", self.exit_btn_onclick)
 
@@ -390,6 +424,12 @@ class Menu(ctk.CTk):
             self.download_win = DownloadWindow()
         else:
             self.download_win.focus()
+
+    def label_btn_onclick(self):
+        if self.label_win is None or not self.label_win.winfo_exists():
+            self.label_win = FrameLabelingWindow()
+        else:
+            self.label_win.focus()
 
 
 class App:
