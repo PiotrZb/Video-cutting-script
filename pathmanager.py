@@ -3,34 +3,36 @@ from pathlib import Path
 
 
 class PathManager:
-    _LOCAL_PATH = Path(__file__).parent.absolute().__str__()
+    def __init__(self):
+        self._LOCAL_PATH = Path(__file__).parent.absolute().__str__()
 
-    _CURRENT_SYSTEM_NAME = os.name
+        self._CURRENT_SYSTEM_NAME = os.name
 
-    _SAVE_FILES_DESTINATION_PATH = _LOCAL_PATH
-    _SAVE_WRONG_URL_DESTINATION_PATH = _LOCAL_PATH
-    _URL_FILE_PATH = _LOCAL_PATH
-    _SAVE_FRAMES_DESTINATION_PATH = _LOCAL_PATH
-    _VIDEOS_FILES_PATH = _LOCAL_PATH
+        self._SAVE_FILES_DESTINATION_PATH = self._LOCAL_PATH
+        self._SAVE_WRONG_URL_DESTINATION_PATH = self._LOCAL_PATH
+        self._URL_FILE_PATH = self._LOCAL_PATH
+        self._SAVE_FRAMES_DESTINATION_PATH = self._LOCAL_PATH
+        self._VIDEOS_FILES_PATH = self._LOCAL_PATH
 
-    if _CURRENT_SYSTEM_NAME == 'nt':
-        _SAVE_FILES_DESTINATION_PATH += '\\Downloads'
-        _SAVE_WRONG_URL_DESTINATION_PATH += '\\Res\\wrong_url_list.txt'
-        _URL_FILE_PATH += '\\Res\\url_list.txt'
-        _SAVE_FRAMES_DESTINATION_PATH += '\\Frames'
-        # TODO PATH TO CHANGE
-        _VIDEOS_FILES_PATH += '\\Videos\\test_file.mp4'
-    elif _CURRENT_SYSTEM_NAME == 'posix':
-        _SAVE_FILES_DESTINATION_PATH += '/Downloads'
-        _SAVE_WRONG_URL_DESTINATION_PATH += '/Res/wrong_url_list.txt'
-        _URL_FILE_PATH += '/Res/url_list.txt'
-        _SAVE_FRAMES_DESTINATION_PATH += '/Frames'
-        # TODO PATH TO CHANGE
-        _VIDEOS_FILES_PATH += '/Videos/test_file.mp4'
-    else:
-        print("Your system is not supported")
-        exit()
+        if self._CURRENT_SYSTEM_NAME == 'nt':
+            self._SAVE_FILES_DESTINATION_PATH += '\\Downloads'
+            self._SAVE_WRONG_URL_DESTINATION_PATH += '\\Res\\wrong_url_list.txt'
+            self._URL_FILE_PATH += '\\Res\\url_list.txt'
+            self._SAVE_FRAMES_DESTINATION_PATH += '\\Frames'
+            # TODO PATH TO CHANGE
+            self._VIDEOS_FILES_PATH += '\\Videos\\test_file.mp4'
+        elif self._CURRENT_SYSTEM_NAME == 'posix':
+            self._SAVE_FILES_DESTINATION_PATH += '/Downloads'
+            self._SAVE_WRONG_URL_DESTINATION_PATH += '/Res/wrong_url_list.txt'
+            self._URL_FILE_PATH += '/Res/url_list.txt'
+            self._SAVE_FRAMES_DESTINATION_PATH += '/Frames'
+            # TODO PATH TO CHANGE
+            self._VIDEOS_FILES_PATH += '/Videos/test_file.mp4'
+        else:
+            print("Your system is not supported")
+            exit()
 
+    # Getters
     @property
     def get_files_destination_path(self):
         return self._SAVE_FILES_DESTINATION_PATH
