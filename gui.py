@@ -8,6 +8,7 @@ import numpy as np
 import threading
 
 VIDEO_FILE_EXTENSIONS = ('.mp4', '.m4v', '.m4p')
+IMAGE_FILE_EXTENSIONS = ('.jpg', 'jpeg', '.png')
 
 path_manager = PathManager()
 
@@ -17,28 +18,72 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         super().__init__()
 
         # Window settings
-        self._WINDOW_WIDTH = 700
-        self._WINDOW_HEIGHT = 600
+        self._WINDOW_WIDTH = 530
+        self._WINDOW_HEIGHT = 180
 
         self.geometry(f'{self._WINDOW_WIDTH}x{self._WINDOW_HEIGHT}')
         self.resizable(False, False)
         self.title('Frame labeling tool')
         self.grab_set()  # setting focus on new window
 
+        self.files = self.load_frames()
+        self.selected_file = None
+
         # Widgets
         self.exit_btn = ctk.CTkButton(master=self, text='Exit',
                                       font=ctk.CTkFont(size=20),
-                                      width=200, height=50,
+                                      width=150, height=30,
                                       command=self.exit_btn_onclick)
+        self.next_btn = ctk.CTkButton(master=self, text='>',
+                                      font=ctk.CTkFont(size=20),
+                                      width=150, height=30,
+                                      command=self.next_btn_onclick)
+        self.previous_btn = ctk.CTkButton(master=self, text='<',
+                                          font=ctk.CTkFont(size=20),
+                                          width=150, height=30,
+                                          command=self.previous_btn_onclick)
+        self.load_btn = ctk.CTkButton(master=self, text='Load',
+                                      font=ctk.CTkFont(size=20),
+                                      width=150, height=30,
+                                      command=self.load_btn_onclick)
+        self.cm_box = ctk.CTkComboBox(master=self, values=self.files,
+                                      state='readonly',
+                                      command=self.cmbox_callback,
+                                      width=500)
+        self.cm_box.set('')
 
         # Layout
-        self.exit_btn.grid(row=1, column=1, pady=20, padx=20)
+        self.exit_btn.grid(row=3, column=2, pady=15, padx=5)
+        self.previous_btn.grid(row=2, column=1, pady=15, padx=5)
+        self.load_btn.grid(row=2, column=2, pady=15, padx=5)
+        self.next_btn.grid(row=2, column=3, pady=15, padx=5)
+        self.cm_box.grid(row=1, column=1, pady=15, padx=15, columnspan=3)
 
-        # Methods
-        # OnClick methods
+    # Methods
+
+    def load_frames(self):
+        return [file for file in os.listdir(path_manager.get_frames_destination_path)
+                if file.endswith(IMAGE_FILE_EXTENSIONS)]
+
+    # OnClick methods
+
+    def load_btn_onclick(self):
+        frame_path = path_manager.get_frames_destination_path + '\\' + self.selected_file
+        self.frame = cv.imread(frame_path)
+        cv.imshow('Frame',self.frame)
+
+    def previous_btn_onclick(self):
+        pass
+
+    def next_btn_onclick(self):
+        pass
 
     def exit_btn_onclick(self):
+        cv.destroyAllWindows()
         self.destroy()
+
+    def cmbox_callback(self, selected):
+        self.selected_file = selected
 
 
 class CutWindow(ctk.CTkToplevel):
