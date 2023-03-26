@@ -32,6 +32,8 @@ class PathManager:
             print("Your system is not supported")
             exit()
 
+        self.frame_path = self._SAVE_FRAMES_DESTINATION_PATH
+
     # Getters
     @property
     def get_files_destination_path(self):
@@ -60,5 +62,18 @@ class PathManager:
     @property
     def get_local_path(self):
         return self._LOCAL_PATH
+
+    @property
+    def get_selected_frame_path(self):
+        return self.frame_path
+
+    # Set frame path
+    def set_current_frame_path(self, selected_frame):
+        if self._CURRENT_SYSTEM_NAME == 'nt':
+            self.frame_path = self._SAVE_FRAMES_DESTINATION_PATH + f'\\{selected_frame}'
+        elif self._CURRENT_SYSTEM_NAME == 'posix':
+            self.frame_path = self._SAVE_FRAMES_DESTINATION_PATH + f'/{selected_frame}'
+
+        return self.frame_path
 
 

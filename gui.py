@@ -67,19 +67,19 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         self.cm_box.grid(row=1, column=1, pady=15, padx=15, columnspan=3)
 
     # Methods
-    def mouse_callback(self,event, x, y, flags, param):
+    def mouse_callback(self, event, x, y, flags, param):
         if event == cv.EVENT_LBUTTONDOWN:
             self.dragging_active = True
-            self.rect_top_left = (x,y)
+            self.rect_top_left = (x, y)
         elif event == cv.EVENT_LBUTTONUP:
             self.dragging_active = False
-            self.rect_bottom_right = (x,y)
+            self.rect_bottom_right = (x, y)
             self.frame_with_rect = self.frame.copy()
             cv.rectangle(self.frame_with_rect, self.rect_top_left, self.rect_bottom_right, (0, 255, 0), 3)
             cv.imshow('Frame', self.frame_with_rect)
         elif event == cv.EVENT_MOUSEMOVE and self.dragging_active:
             self.frame_with_rect = self.frame.copy()
-            cv.rectangle(self.frame_with_rect,self.rect_top_left,(x,y),(0,255,0),3)
+            cv.rectangle(self.frame_with_rect, self.rect_top_left, (x, y), (0, 255, 0), 3)
             cv.imshow('Frame',self.frame_with_rect)
 
     def load_frames(self):
@@ -87,9 +87,9 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 if file.endswith(IMAGE_FILE_EXTENSIONS)]
 
     # OnClick methods
-
     def load_btn_onclick(self):
-        frame_path = path_manager.get_frames_destination_path + '\\' + self.selected_file
+        frame_path = path_manager.set_current_frame_path(self.selected_file)
+        print(frame_path)
         self.frame = cv.imread(frame_path)
         cv.imshow('Frame', self.frame)
         cv.setMouseCallback('Frame', self.mouse_callback)
