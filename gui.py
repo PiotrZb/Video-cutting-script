@@ -28,6 +28,13 @@ class FrameLabelingWindow(ctk.CTkToplevel):
 
         self.files = self.load_frames()
         self.selected_file = None
+        self.opencv_window_thread = None
+        self.frame_win = None
+        self.frame = None
+        self.frame_with_rect = None
+        self.dragging_active = False
+        self.rect_top_left = (0,0)
+        self.rect_bottom_right = (0,0)
 
         # Widgets
         self.exit_btn = ctk.CTkButton(master=self, text='Exit',
@@ -60,6 +67,20 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         self.cm_box.grid(row=1, column=1, pady=15, padx=15, columnspan=3)
 
     # Methods
+    def mouse_callback(self,event, x, y, flags, param):
+        if event == cv.EVENT_LBUTTONDOWN:
+            self.dragging_active = True
+            self.rect_top_left = (x,y)
+        elif event == cv.EVENT_LBUTTONUP:
+            self.dragging_active = False
+            self.rect_bottom_right = (x,y)
+            self.frame_with_rect = self.frame.copy()
+            cv.rectangle(self.frame_with_rect, self.rect_top_left, self.rect_bottom_right, (0, 255, 0), 3)
+            cv.imshow('Frame', self.frame_with_rect)
+        elif event == cv.EVENT_MOUSEMOVE and self.dragging_active:
+            self.frame_with_rect = self.frame.copy()
+            cv.rectangle(self.frame_with_rect,self.rect_top_left,(x,y),(0,255,0),3)
+            cv.imshow('Frame',self.frame_with_rect)
 
     def load_frames(self):
         return [file for file in os.listdir(path_manager.get_frames_destination_path)
@@ -70,8 +91,10 @@ class FrameLabelingWindow(ctk.CTkToplevel):
     def load_btn_onclick(self):
         frame_path = path_manager.get_frames_destination_path + '\\' + self.selected_file
         self.frame = cv.imread(frame_path)
-        cv.imshow('Frame',self.frame)
+        cv.imshow('Frame', self.frame)
+        cv.setMouseCallback('Frame', self.mouse_callback)
 
+    # TODO: Defined below onclick methods
     def previous_btn_onclick(self):
         pass
 
