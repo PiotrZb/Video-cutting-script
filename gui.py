@@ -13,9 +13,8 @@ IMAGE_FILE_EXTENSIONS = ('.jpg', 'jpeg', '.png')
 path_manager = PathManager()
 
 
-# TODO: Clear code, new functions, files...
-# TODO: User cannot name a class yet.
-# TODO: Random color generator for bounding boxes.
+# TODO: Clear code, new functions, files, comments and descriptions...
+# TODO: Random color generator for bounding boxes. (for now every box has the same color)
 
 
 class FrameLabelingWindow(ctk.CTkToplevel):
@@ -93,24 +92,31 @@ class FrameLabelingWindow(ctk.CTkToplevel):
             self.rect_top_left = (x, y)
 
         elif event == cv.EVENT_LBUTTONUP:
-            self.changes_saved = False
             self.dragging_active = False
-            self.rect_bottom_right = (x, y)
-            self.frame_with_rect = self.final_frame.copy()
+            dialog = ctk.CTkInputDialog(title='Class id', text='Enter a class id')
+            class_id = dialog.get_input()
+            if class_id != '':
+                self.changes_saved = False
+                self.rect_bottom_right = (x, y)
+                self.frame_with_rect = self.final_frame.copy()
 
-            cv.rectangle(self.frame_with_rect, self.rect_top_left, self.rect_bottom_right, self.rect_color, 3)
-            self.final_frame = self.frame_with_rect
-            self.frame_with_rect = self.frame
-            cv.imshow('Frame', self.final_frame)
+                cv.rectangle(self.frame_with_rect, self.rect_top_left, self.rect_bottom_right, self.rect_color, 3)
+                self.final_frame = self.frame_with_rect
+                self.frame_with_rect = self.frame
+                cv.imshow('Frame', self.final_frame)
 
-            frame_shape = self.frame.shape
-            width = abs(self.rect_bottom_right[0] - self.rect_top_left[0]) / frame_shape[1]
-            height = abs(self.rect_bottom_right[1] - self.rect_top_left[1]) / frame_shape[0]
-            centerx = (self.rect_top_left[0] + (self.rect_bottom_right[0] - self.rect_top_left[0]) / 2) / frame_shape[1]
-            centery = (self.rect_top_left[1] + (self.rect_bottom_right[1] - self.rect_top_left[1]) / 2) / frame_shape[0]
-            class_id = 0
+                frame_shape = self.frame.shape
+                width = abs(self.rect_bottom_right[0] - self.rect_top_left[0]) / frame_shape[1]
+                height = abs(self.rect_bottom_right[1] - self.rect_top_left[1]) / frame_shape[0]
+                centerx = (self.rect_top_left[0] + (self.rect_bottom_right[0] - self.rect_top_left[0]) / 2) / \
+                          frame_shape[1]
+                centery = (self.rect_top_left[1] + (self.rect_bottom_right[1] - self.rect_top_left[1]) / 2) / \
+                          frame_shape[0]
 
-            self.labels.append([class_id, centerx, centery, width, height])
+                self.labels.append([class_id, centerx, centery, width, height])
+            else:
+                self.frame_with_rect = self.final_frame.copy()
+                cv.imshow('Frame', self.final_frame)
 
         elif event == cv.EVENT_MOUSEMOVE and self.dragging_active:
             self.frame_with_rect = self.final_frame.copy()
