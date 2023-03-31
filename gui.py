@@ -12,6 +12,10 @@ IMAGE_FILE_EXTENSIONS = ('.jpg', 'jpeg', '.png')
 
 path_manager = PathManager()
 
+# TODO: Clear code, new functions, files...
+# TODO: Multiple rectangles drawing not working.
+# TODO: User cannot name a class yet
+
 
 class FrameLabelingWindow(ctk.CTkToplevel):
     def __init__(self):
@@ -27,16 +31,17 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         self.grab_set()  # setting focus on new window
 
         self.files = self.load_frames()
+        self.files.sort()
         self.selected_file = None
-        self.opencv_window_thread = None
-        self.frame_win = None
         self.frame = None
         self.frame_with_rect = None
+        self.final_frame = None
         self.dragging_active = False
-        self.rect_top_left = (0, 0)
-        self.rect_bottom_right = (0, 0)
-
         self.rect_color = (0, 255, 0)
+        self.rect_top_left = None
+        self.rect_bottom_right = None
+        self.changes_saved = True
+        self.labels = []
 
         # Widgets
         self.exit_btn = ctk.CTkButton(master=self, text='Exit',
@@ -47,6 +52,14 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                                       font=ctk.CTkFont(size=20),
                                       width=150, height=30,
                                       command=self.next_btn_onclick)
+        self.save_btn = ctk.CTkButton(master=self, text='Save',
+                                      font=ctk.CTkFont(size=20),
+                                      width=150, height=30,
+                                      command=self.save_label_onclick)
+        self.clear_btn = ctk.CTkButton(master=self, text='Clear',
+                                       font=ctk.CTkFont(size=20),
+                                       width=150, height=30,
+                                       command=self.clear_btn_onclick)
         self.previous_btn = ctk.CTkButton(master=self, text='<',
                                           font=ctk.CTkFont(size=20),
                                           width=150, height=30,
@@ -62,24 +75,42 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         self.cm_box.set('')
 
         # Layout
-        self.exit_btn.grid(row=3, column=2, pady=15, padx=5)
+        self.exit_btn.grid(row=3, column=3, pady=15, padx=5)
         self.previous_btn.grid(row=2, column=1, pady=15, padx=5)
         self.load_btn.grid(row=2, column=2, pady=15, padx=5)
         self.next_btn.grid(row=2, column=3, pady=15, padx=5)
+        self.save_btn.grid(row=3, column=1, pady=15, padx=5)
+        self.clear_btn.grid(row=3, column=2, pady=15, padx=5)
         self.cm_box.grid(row=1, column=1, pady=15, padx=15, columnspan=3)
 
     # Methods
     def mouse_callback(self, event, x, y, flags, param):
+
         # TODO fix for unix clicking btn
         if event == cv.EVENT_LBUTTONDOWN:
             self.dragging_active = True
             self.rect_top_left = (x, y)
+
         elif event == cv.EVENT_LBUTTONUP:
+            self.changes_saved = False
             self.dragging_active = False
             self.rect_bottom_right = (x, y)
             self.frame_with_rect = self.frame.copy()
+
             cv.rectangle(self.frame_with_rect, self.rect_top_left, self.rect_bottom_right, self.rect_color, 3)
-            cv.imshow('Frame', self.frame_with_rect)
+            self.final_frame = self.frame_with_rect
+            self.frame_with_rect = self.frame
+            cv.imshow('Frame', self.final_frame)
+
+            frame_shape = self.frame.shape
+            width = abs(self.rect_bottom_right[0] - self.rect_top_left[0]) / frame_shape[1]
+            height = abs(self.rect_bottom_right[1] - self.rect_top_left[1]) / frame_shape[0]
+            centerx = (self.rect_top_left[0] + (self.rect_bottom_right[0] - self.rect_top_left[0]) / 2) / frame_shape[1]
+            centery = (self.rect_top_left[1] + (self.rect_bottom_right[1] - self.rect_top_left[1]) / 2) / frame_shape[0]
+            class_id = 0
+
+            self.labels.append([class_id, centerx, centery, width, height])
+
         elif event == cv.EVENT_MOUSEMOVE and self.dragging_active:
             self.frame_with_rect = self.frame.copy()
             cv.rectangle(self.frame_with_rect, self.rect_top_left, (x, y), self.rect_color, 3)
@@ -89,19 +120,54 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         return [file for file in os.listdir(path_manager.get_frames_destination_path)
                 if file.endswith(IMAGE_FILE_EXTENSIONS)]
 
+    # TODO: Clear button onClick method
     # OnClick methods
-    def load_btn_onclick(self):
-        frame_path = path_manager.set_current_frame_path(self.selected_file)
-        self.frame = cv.imread(frame_path)
-        cv.imshow('Frame', self.frame)
-        cv.setMouseCallback('Frame', self.mouse_callback)
 
-    # TODO: Defined below onclick methods
-    def previous_btn_onclick(self):
+    def clear_btn_onclick(self):
+        self.labels.clear()
         pass
+
+    def save_label_onclick(self):
+        if self.frame is not None and not self.changes_saved:
+            file_name = self.selected_file.split('.')[0]
+
+            with open(f'Labels/{file_name}.txt', 'w') as file:
+                for label in self.labels:
+                    string_to_save = str(label[0]) + ' ' + str(label[1]) + ' ' + str(label[2]) + ' ' + str(
+                        label[3]) + ' ' + str(label[4]) + '\n'
+
+                    file.write(string_to_save)
+
+            self.changes_saved = True
+
+    def load_btn_onclick(self):
+        if self.selected_file is not None:
+            frame_path = path_manager.set_current_frame_path(self.selected_file)
+            self.frame = cv.imread(frame_path)
+            cv.imshow('Frame', self.frame)
+            cv.setMouseCallback('Frame', self.mouse_callback)
+
+    def previous_btn_onclick(self):
+        if self.selected_file is not None:
+            current_frame_index = self.files.index(self.selected_file)
+            if current_frame_index > 0:
+                self.selected_file = self.files[current_frame_index - 1]
+                path = path_manager.get_frames_destination_path + '\\' + self.selected_file
+                self.frame = cv.imread(path)
+                self.cm_box.set(self.selected_file)
+                cv.imshow('Frame', self.frame)
+                cv.setMouseCallback('Frame', self.mouse_callback)
 
     def next_btn_onclick(self):
-        pass
+        if self.selected_file is not None:
+            current_frame_index = self.files.index(self.selected_file)
+            if current_frame_index < len(self.files) - 1:
+                self.selected_file = self.files[current_frame_index + 1]
+                path = path_manager.get_frames_destination_path + '\\' + self.selected_file
+                self.frame = cv.imread(path)
+                self.cm_box.set(self.selected_file)
+                cv.imshow('Frame', self.frame)
+                cv.setMouseCallback('Frame', self.mouse_callback)
 
     def exit_btn_onclick(self):
         cv.destroyAllWindows()
