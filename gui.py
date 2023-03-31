@@ -12,9 +12,10 @@ IMAGE_FILE_EXTENSIONS = ('.jpg', 'jpeg', '.png')
 
 path_manager = PathManager()
 
+
 # TODO: Clear code, new functions, files...
-# TODO: Multiple rectangles drawing not working.
-# TODO: User cannot name a class yet
+# TODO: User cannot name a class yet.
+# TODO: Random color generator for bounding boxes.
 
 
 class FrameLabelingWindow(ctk.CTkToplevel):
@@ -95,7 +96,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
             self.changes_saved = False
             self.dragging_active = False
             self.rect_bottom_right = (x, y)
-            self.frame_with_rect = self.frame.copy()
+            self.frame_with_rect = self.final_frame.copy()
 
             cv.rectangle(self.frame_with_rect, self.rect_top_left, self.rect_bottom_right, self.rect_color, 3)
             self.final_frame = self.frame_with_rect
@@ -112,7 +113,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
             self.labels.append([class_id, centerx, centery, width, height])
 
         elif event == cv.EVENT_MOUSEMOVE and self.dragging_active:
-            self.frame_with_rect = self.frame.copy()
+            self.frame_with_rect = self.final_frame.copy()
             cv.rectangle(self.frame_with_rect, self.rect_top_left, (x, y), self.rect_color, 3)
             cv.imshow('Frame', self.frame_with_rect)
 
@@ -120,12 +121,16 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         return [file for file in os.listdir(path_manager.get_frames_destination_path)
                 if file.endswith(IMAGE_FILE_EXTENSIONS)]
 
-    # TODO: Clear button onClick method
     # OnClick methods
 
     def clear_btn_onclick(self):
         self.labels.clear()
-        pass
+        self.final_frame = self.frame.copy()
+        self.frame_with_rect = self.frame.copy()
+        self.rect_top_left = None
+        self.rect_bottom_right = None
+        self.changes_saved = True
+        cv.imshow('Frame', self.frame)
 
     def save_label_onclick(self):
         if self.frame is not None and not self.changes_saved:
@@ -144,6 +149,8 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         if self.selected_file is not None:
             frame_path = path_manager.set_current_frame_path(self.selected_file)
             self.frame = cv.imread(frame_path)
+            self.final_frame = self.frame.copy()
+            self.frame_with_rect = self.frame.copy()
             cv.imshow('Frame', self.frame)
             cv.setMouseCallback('Frame', self.mouse_callback)
 
