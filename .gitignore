@@ -3,6 +3,7 @@ Downloads/*
 Videos/*
 Frames/*
 Res/*
+Labels/*
 !.gitkeep
 
 #bfg --replace-text Res/url_list.txt
