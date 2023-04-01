@@ -141,7 +141,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         if self.frame is not None and not self.changes_saved:
             file_name = self.selected_file.split('.')[0]
 
-            with open(f'Labels/{file_name}.txt', 'w') as file:
+            with open(f'{path_manager.get_labels_destination_path}/{file_name}.txt', 'w') as file:
                 for label in self.labels:
                     string_to_save = str(label[0]) + ' ' + str(label[1]) + ' ' + str(label[2]) + ' ' + str(
                         label[3]) + ' ' + str(label[4]) + '\n'

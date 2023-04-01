@@ -1,9 +1,9 @@
 # Data from folders
-Downloads/*
-Videos/*
-Frames/*
-Res/*
-Labels/*
+Data/Downloads/*
+Data/Videos/*
+Data/Frames/*
+Data/Res/*
+Data/Labels/*
 !.gitkeep
 
 #bfg --replace-text Res/url_list.txt
@@ -22,7 +22,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-downloads/
+Data/Downloads/
 eggs/
 .eggs/
 lib/
@@ -155,7 +155,7 @@ env/
 build/
 develop-eggs/
 dist/
-downloads/
+Data/Downloads/
 eggs/
 .eggs/
 lib/

@@ -12,21 +12,24 @@ class PathManager:
         self._URL_FILE_PATH = self._LOCAL_PATH
         self._SAVE_FRAMES_DESTINATION_PATH = self._LOCAL_PATH
         self._VIDEOS_FILES_PATH = self._LOCAL_PATH
+        self._SAVE_LABELS_DESTINATION_PATH = self._LOCAL_PATH
 
         if self._CURRENT_SYSTEM_NAME == 'nt':
-            self._SAVE_FILES_DESTINATION_PATH += '\\Downloads'
-            self._SAVE_WRONG_URL_DESTINATION_PATH += '\\Res\\wrong_url_list.txt'
-            self._URL_FILE_PATH += '\\Res\\url_list.txt'
-            self._SAVE_FRAMES_DESTINATION_PATH += '\\Frames'
+            self._SAVE_FILES_DESTINATION_PATH += '\\Data\\Downloads'
+            self._SAVE_WRONG_URL_DESTINATION_PATH += '\\Data\\Res\\wrong_url_list.txt'
+            self._URL_FILE_PATH += '\\Data\\Res\\url_list.txt'
+            self._SAVE_FRAMES_DESTINATION_PATH += '\\Data\\Frames'
+            self._SAVE_LABELS_DESTINATION_PATH += '\\Data\\Labels'
             # TODO PATH TO CHANGE
-            self._VIDEOS_FILES_PATH += '\\Videos\\test_file.mp4'
+            self._VIDEOS_FILES_PATH += '\\Data\\Videos\\test_file.mp4'
         elif self._CURRENT_SYSTEM_NAME == 'posix':
-            self._SAVE_FILES_DESTINATION_PATH += '/Downloads'
-            self._SAVE_WRONG_URL_DESTINATION_PATH += '/Res/wrong_url_list.txt'
-            self._URL_FILE_PATH += '/Res/url_list.txt'
-            self._SAVE_FRAMES_DESTINATION_PATH += '/Frames'
+            self._SAVE_FILES_DESTINATION_PATH += '/Data/Downloads'
+            self._SAVE_WRONG_URL_DESTINATION_PATH += '/Data/Res/wrong_url_list.txt'
+            self._URL_FILE_PATH += '/Data/Res/url_list.txt'
+            self._SAVE_FRAMES_DESTINATION_PATH += '/Data/Frames'
+            self._SAVE_LABELS_DESTINATION_PATH += '/Data/Labels'
             # TODO PATH TO CHANGE
-            self._VIDEOS_FILES_PATH += '/Videos/test_file.mp4'
+            self._VIDEOS_FILES_PATH += '/Data/Videos/test_file.mp4'
         else:
             print("Your system is not supported")
             exit()
@@ -65,6 +68,10 @@ class PathManager:
     @property
     def get_selected_frame_path(self):
         return self.frame_path
+
+    @property
+    def get_labels_destination_path(self):
+        return self._SAVE_LABELS_DESTINATION_PATH
 
     # Set frame path
     def set_current_frame_path(self, selected_frame):
