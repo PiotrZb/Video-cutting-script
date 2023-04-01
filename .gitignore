@@ -5,6 +5,7 @@ Data/Frames/*
 Data/Res/*
 Data/Labels/*
 !.gitkeep
+.DS_Store
 
 #bfg --replace-text Res/url_list.txt
 #bfg --replace-text Res/wrong_url_list.txt
