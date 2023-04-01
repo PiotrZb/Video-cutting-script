@@ -154,7 +154,6 @@ env/
 build/
 develop-eggs/
 dist/
-Data/Downloads/
 eggs/
 .eggs/
 lib/
