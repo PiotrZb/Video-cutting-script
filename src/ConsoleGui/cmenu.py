@@ -1,7 +1,7 @@
 import os
 
 # Modules
-from pathmanager import PathManager
+from src.pathmanager import PathManager
 
 
 # Path manager object

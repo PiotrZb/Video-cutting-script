@@ -1,5 +1,5 @@
 # Modules
-import gui
+from src import gui
 
 
 def main():

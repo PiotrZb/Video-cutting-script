@@ -2,7 +2,7 @@ import cv2 as cv
 from pytube import YouTube
 
 # Modules
-from pathmanager import PathManager
+from src.pathmanager import PathManager
 
 
 path_manager = PathManager()
