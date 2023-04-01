@@ -9,6 +9,7 @@ import threading
 
 VIDEO_FILE_EXTENSIONS = ('.mp4', '.m4v', '.m4p')
 IMAGE_FILE_EXTENSIONS = ('.jpg', 'jpeg', '.png')
+CLASS_ID = ['rock', 'tree', 'car parts', 'car wheel', 'snow', 'bird']
 
 path_manager = PathManager()
 
@@ -23,7 +24,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
 
         # Window settings
         self._WINDOW_WIDTH = 530
-        self._WINDOW_HEIGHT = 180
+        self._WINDOW_HEIGHT = 250
 
         self.geometry(f'{self._WINDOW_WIDTH}x{self._WINDOW_HEIGHT}')
         self.resizable(False, False)
@@ -42,6 +43,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         self.rect_bottom_right = None
         self.changes_saved = True
         self.labels = []
+        self.selected_class_id = CLASS_ID[0]
 
         # Widgets
         self.exit_btn = ctk.CTkButton(master=self, text='Exit',
@@ -74,13 +76,21 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                                       width=500)
         self.cm_box.set('')
 
-        # Layout
+        self.cm_box_class_id = ctk.CTkComboBox(master=self, values=CLASS_ID, state='readonly',
+                                               command=self.cmbox_callback_select_class,
+                                               width=200, justify='center')
+        self.cm_box_class_id.set(self.selected_class_id)
+
+        self.label_class_id = ctk.CTkLabel(master=self, text=f'Selected class id')
+
         self.exit_btn.grid(row=3, column=3, pady=15, padx=5)
         self.previous_btn.grid(row=2, column=1, pady=15, padx=5)
         self.load_btn.grid(row=2, column=2, pady=15, padx=5)
         self.next_btn.grid(row=2, column=3, pady=15, padx=5)
         self.save_btn.grid(row=3, column=1, pady=15, padx=5)
         self.clear_btn.grid(row=3, column=2, pady=15, padx=5)
+        self.label_class_id.grid(row=4, column=1, pady=15)
+        self.cm_box_class_id.grid(row=4, column=2, pady=15)
         self.cm_box.grid(row=1, column=1, pady=15, padx=15, columnspan=3)
 
     # Methods
@@ -93,9 +103,8 @@ class FrameLabelingWindow(ctk.CTkToplevel):
 
         elif event == cv.EVENT_LBUTTONUP:
             self.dragging_active = False
-            dialog = ctk.CTkInputDialog(title='Class id', text='Enter a class id')
-            class_id = dialog.get_input()
-            if class_id != '':
+
+            if self.selected_class_id != '':
                 self.changes_saved = False
                 self.rect_bottom_right = (x, y)
                 self.frame_with_rect = self.final_frame.copy()
@@ -113,7 +122,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 centery = (self.rect_top_left[1] + (self.rect_bottom_right[1] - self.rect_top_left[1]) / 2) / \
                           frame_shape[0]
 
-                self.labels.append([class_id, centerx, centery, width, height])
+                self.labels.append([self.selected_class_id, centerx, centery, width, height])
             else:
                 self.frame_with_rect = self.final_frame.copy()
                 cv.imshow('Frame', self.final_frame)
@@ -188,6 +197,9 @@ class FrameLabelingWindow(ctk.CTkToplevel):
 
     def cmbox_callback(self, selected):
         self.selected_file = selected
+
+    def cmbox_callback_select_class(self, selected):
+        self.selected_class_id = selected
 
 
 class CutWindow(ctk.CTkToplevel):
