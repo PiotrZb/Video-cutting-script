@@ -1,6 +1,36 @@
 # Video-cutting-script
 A script to download YouTube videos and cut frames from them
 
+## Directory tree
+
+<div>
+    <span >└── Project/</span>
+    <div style="margin-left: 30px"> 
+        <span >├── src/</span>
+        <div style="margin-left: 30px"> 
+            <span >├── main.py</span><br>
+            <span >├── gui.py</span><br>
+            <span >├── settings.py</span><br>
+            <span >├── pathmanager.py</span><br>
+            <span >├── Pages/</span>
+            <div style="margin-left: 30px"> 
+                <span >├── CutWindow.py</span><br>
+                <span >├── DownloadWindow.py</span><br>
+                <span >├── FrameLabelingWindow.py</span><br>
+                <span >├── Menu.py</span><br>
+            </div>
+        </div>
+        <span >├── Data/</span>
+        <div style="margin-left: 30px"> 
+            <span >├── Downloads/</span><br>
+            <span >├── Frames/</span><br>
+            <span >├── Labels/</span><br>
+            <span >├── Res/</span><br>
+            <span >├── Videos/</span>
+        </div>
+    </div>
+</div>
+
 ## Installation
 
 ### MacOS (ARM silicon)

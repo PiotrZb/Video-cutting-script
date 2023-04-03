@@ -3,7 +3,7 @@ import os
 
 class PathManager:
     def __init__(self):
-        self._LOCAL_PATH = os.path.dirname(os.path.abspath('../main.py'))
+        self._LOCAL_PATH = os.path.dirname(os.path.abspath('main.py'))
 
         self._CURRENT_SYSTEM_NAME = os.name
 
