@@ -1,9 +1,9 @@
 # Modules
-from src import gui
+from src.gui import App
 
 
 def main():
-	program = gui.App()
+	program = App()
 	program.run()
 
 
