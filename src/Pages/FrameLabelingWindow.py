@@ -29,7 +29,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         self.rect_bottom_right = None
         self.changes_saved = True
         self.labels = []
-        self.selected_class_id = CLASS_ID[0]
+        self.selected_class_id = list(CLASS_ID.keys())[0]
 
         # Widgets
         self.exit_btn = ctk.CTkButton(master=self, text='Exit',
@@ -62,7 +62,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                                       width=500)
         self.cm_box.set('')
 
-        self.cm_box_class_id = ctk.CTkComboBox(master=self, values=CLASS_ID, state='readonly',
+        self.cm_box_class_id = ctk.CTkComboBox(master=self, values=list(CLASS_ID.keys()), state='readonly',
                                                command=self.cmbox_callback_select_class,
                                                width=200, justify='center')
         self.cm_box_class_id.set(self.selected_class_id)
@@ -112,7 +112,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 centery = (self.rect_top_left[1] + (self.rect_bottom_right[1] - self.rect_top_left[1]) / 2) / \
                           frame_shape[0]
 
-                self.labels.append([self.selected_class_id, centerx, centery, width, height])
+                self.labels.append([CLASS_ID[self.selected_class_id], centerx, centery, width, height])
             else:
                 self.frame_with_rect = self.final_frame.copy()
                 cv.imshow('Frame', self.final_frame)
