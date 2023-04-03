@@ -2,34 +2,34 @@
 A script to download YouTube videos and cut frames from them
 
 ## Directory tree
-
-<div>
-    <span >└── Project/</span>
-    <div style="margin-left: 30px"> 
-        <span >├── src/</span>
-        <div style="margin-left: 30px"> 
-            <span >├── main.py</span><br>
-            <span >├── gui.py</span><br>
-            <span >├── settings.py</span><br>
-            <span >├── pathmanager.py</span><br>
-            <span >├── Pages/</span>
-            <div style="margin-left: 30px"> 
-                <span >├── CutWindow.py</span><br>
-                <span >├── DownloadWindow.py</span><br>
-                <span >├── FrameLabelingWindow.py</span><br>
-                <span >├── Menu.py</span><br>
-            </div>
-        </div>
-        <span >├── Data/</span>
-        <div style="margin-left: 30px"> 
-            <span >├── Downloads/</span><br>
-            <span >├── Frames/</span><br>
-            <span >├── Labels/</span><br>
-            <span >├── Res/</span><br>
-            <span >├── Videos/</span>
-        </div>
-    </div>
-</div>
+```bash
+.
+└── Video-cutting-script/
+    ├── Data/
+    │   ├── Downloads/
+    │   ├── Frames/
+    │   ├── Labels/
+    │   ├── Res/
+    │   └── Videos/
+    ├── src/
+    │   ├── ConsoleGui/
+    │   │   ├── cmenu.py
+    │   │   └── functions.py
+    │   ├── Pages/
+    │   │   ├── __init__.py
+    │   │   ├── CutWindow.py
+    │   │   ├── DownloadWindow.py
+    │   │   ├── FrameLabellingWindow.py
+    │   │   └── Menu.py
+    │   ├── __init__.py
+    │   ├── gui.py
+    │   ├── pathmanger.py
+    │   └── settings.py
+    ├── main.py
+    ├── setup.py
+    ├── README.md
+    └── requirements.txt
+```
 
 ## Installation
 
@@ -37,19 +37,19 @@ A script to download YouTube videos and cut frames from them
 
 You will need to install Rosetta2 emulator for the new ARM silicon 
 
-```
+```bash
 $ /usr/sbin/softwareupdate --install-rosetta --agree-to-license
 ```
 
 After installing Rosetta2 above you can then use the Homebrew cmd and install Homebrew for ARM M1 chip: 
 
-```
+```bash
 $ arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 ```
 
 Install Tkinter using Homebrew
 
-```
+```bash
 $ arch -x86_64 brew install python-tk
 ```
 
@@ -57,13 +57,13 @@ $ arch -x86_64 brew install python-tk
 
 Install Homebrew
 
-``` 
+```bash
 $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 You will need to install Tkinter using Homebrew
 
-```
+```bash
 $ brew install python-tk
 ```
 
