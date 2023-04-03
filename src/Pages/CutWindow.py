@@ -35,7 +35,7 @@ class CutWindow(ctk.CTkToplevel):
         self.slider_end_max = 0
 
         # Variables Frames
-        self.max_frame_width = 400
+        self.max_frame_width = 1000
         self.start_frame_image = None
         self.end_frame_image = None
 

@@ -1,7 +1,7 @@
 import customtkinter as ctk
-from src.Pages.CutWindow import CutWindow
-from src.Pages.DownloadWindow import DownloadWindow
-from src.Pages.FrameLabelingWindow import FrameLabelingWindow
+from .CutWindow import CutWindow
+from .DownloadWindow import DownloadWindow
+from .FrameLabelingWindow import FrameLabelingWindow
 
 
 class Menu(ctk.CTk):
