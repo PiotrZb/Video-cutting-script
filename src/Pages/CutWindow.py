@@ -91,7 +91,7 @@ class CutWindow(ctk.CTkToplevel):
                                       width=200, height=50,
                                       command=self.exit_btn_onclick)
 
-        self.extract_frames_btn.grid(row=5, column=0, columnspan=2, pady=20,
+        self.extract_frames_btn.grid(row=5, column=1, columnspan=1, pady=20,
                                      padx=20)
         self.exit_btn.grid(row=6, column=1, pady=20, padx=20)
 
@@ -102,6 +102,14 @@ class CutWindow(ctk.CTkToplevel):
         self.progress_bar.grid(row=7, column=0, pady=20, padx=20, columnspan=2)
 
         self.protocol("WM_DELETE_WINDOW", self.exit_btn_onclick)
+
+        # enter prefix txtbox
+        self.prefix_txtbox = ctk.CTkTextbox(master=self, height=10)
+        self.prefix_txtbox.grid(row=6, column=0, columnspan=1, pady=10, padx=20, sticky=ctk.N)
+
+        # enter prefix label
+        self.prefix_label = ctk.CTkLabel(master=self, text='Enter prefix')
+        self.prefix_label.grid(row=5, column=0, columnspan=1, pady=10, padx=20, sticky=ctk.S)
 
     # methods
     def read_current_frame(self, frame_position=0):
@@ -169,7 +177,8 @@ class CutWindow(ctk.CTkToplevel):
                 if read_success:
                     if frame_index > first_frame:
                         # 	# PNG or JPG format
-                        path = path_manager.get_frames_destination_path + f'/frame{frame_index}.png'
+                        prefix = self.prefix_txtbox.get('1.0', ctk.END).split('\n')[0]
+                        path = path_manager.get_frames_destination_path + '\\' + prefix + f'_frame{frame_index}.png'
                         cv.imwrite(path, frame)
                     # cv.waitKey(5)
             self.slider_end.configure(state='normal')
