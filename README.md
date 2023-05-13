@@ -73,3 +73,21 @@ $ brew install python-tk
 Paste the links to the url_list.txt file in the "Res" folder. <br />
 Each link should be on a separate line in the text file. <br />
 The videos will be saved in the "Downloads" folder.
+
+## GUI
+
+Menu
+
+<img width="202" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/151b94ad-3a7d-46cd-9eb5-dc1b5debfcbb"><br />
+
+Download module
+
+<img width="352" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/5b3c16a9-4cab-43ac-8180-8c91fcc8e3f0"><br />
+
+Video cutting module
+
+<img width="352" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/c759a17f-0bb3-4148-a44a-3399a4992e7a"><br />
+
+Frames labeling module
+
+<img width="267" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/d86fb3aa-e9e1-4d07-86ba-cc3722d51a07"><br />
