@@ -60,6 +60,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                                       state='readonly',
                                       command=self.cmbox_callback,
                                       width=500)
+
         self.cm_box.set('')
 
         self.cm_box_class_id = ctk.CTkComboBox(master=self, values=list(CLASS_ID.keys()), state='readonly',
