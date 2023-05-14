@@ -140,15 +140,18 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         return [file for file in os.listdir(path_manager.get_frames_destination_path)
                 if file.endswith(IMAGE_FILE_EXTENSIONS)]
 
-    # OnClick methods
-
-    def clear_btn_onclick(self):
+    def clear_all(self):
         self.labels.clear()
         self.final_frame = self.frame.copy()
         self.frame_with_rect = self.frame.copy()
         self.rect_top_left = None
         self.rect_bottom_right = None
         self.changes_saved = True
+
+    # OnClick methods
+
+    def clear_btn_onclick(self):
+        self.clear_all()
         cv.imshow('Frame', self.frame)
 
     def save_label_onclick(self):
@@ -168,8 +171,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         if self.selected_file is not None:
             frame_path = path_manager.set_current_frame_path(self.selected_file)
             self.frame = cv.imread(frame_path)
-            self.final_frame = self.frame.copy()
-            self.frame_with_rect = self.frame.copy()
+            self.clear_all()
             cv.imshow('Frame', self.frame)
             cv.setMouseCallback('Frame', self.mouse_callback)
 
@@ -181,6 +183,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 path = path_manager.get_frames_destination_path + '\\' + self.selected_file
                 self.frame = cv.imread(path)
                 self.cm_box.set(self.selected_file)
+                self.clear_all()
                 cv.imshow('Frame', self.frame)
                 cv.setMouseCallback('Frame', self.mouse_callback)
 
@@ -192,6 +195,7 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 path = path_manager.get_frames_destination_path + '\\' + self.selected_file
                 self.frame = cv.imread(path)
                 self.cm_box.set(self.selected_file)
+                self.clear_all()
                 cv.imshow('Frame', self.frame)
                 cv.setMouseCallback('Frame', self.mouse_callback)
 
