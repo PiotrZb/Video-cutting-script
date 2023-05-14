@@ -100,10 +100,23 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 self.rect_bottom_right = (x, y)
                 self.frame_with_rect = self.final_frame.copy()
 
-                cv.rectangle(self.frame_with_rect, self.rect_top_left, self.rect_bottom_right, self.rect_color, 3)
+                cv.rectangle(self.frame_with_rect, self.rect_top_left, self.rect_bottom_right, self.rect_color, 2)
                 self.final_frame = self.frame_with_rect
                 self.frame_with_rect = self.frame
                 cv.imshow('Frame', self.final_frame)
+
+                # checking if corners are correctly defined
+                if self.rect_top_left[0] > self.rect_bottom_right[0]: # x are switched
+                    top_left = (self.rect_bottom_right[0], self.rect_top_left[1])
+                    bottom_right = (self.rect_top_left[0], self.rect_bottom_right[1])
+                    self.rect_top_left = top_left
+                    self.rect_bottom_right = bottom_right
+
+                if self.rect_top_left[1] > self.rect_bottom_right[1]: # y are switched
+                    top_left = (self.rect_top_left[0], self.rect_bottom_right[1])
+                    bottom_right = (self.rect_bottom_right[0], self.rect_top_left[1])
+                    self.rect_top_left = top_left
+                    self.rect_bottom_right = bottom_right
 
                 frame_shape = self.frame.shape
                 width = abs(self.rect_bottom_right[0] - self.rect_top_left[0]) / frame_shape[1]
