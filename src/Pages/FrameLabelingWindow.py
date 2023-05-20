@@ -1,7 +1,11 @@
 import customtkinter as ctk
 import os
+import keyboard
 import cv2 as cv
+import pygetwindow as gw
 from src.settings import CLASS_ID, IMAGE_FILE_EXTENSIONS, path_manager
+
+IMG_WINDOW_NAME = 'Frame'
 
 
 class FrameLabelingWindow(ctk.CTkToplevel):
@@ -61,6 +65,10 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                                       command=self.cmbox_callback,
                                       width=500)
 
+        # key bindings
+        keyboard.on_press(self.on_key_pressed)
+        self.focus_set()
+
         self.cm_box.set('')
 
         self.cm_box_class_id = ctk.CTkComboBox(master=self, values=list(CLASS_ID.keys()), state='readonly',
@@ -79,10 +87,6 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         self.label_class_id.grid(row=4, column=1, pady=15)
         self.cm_box_class_id.grid(row=4, column=2, pady=15)
         self.cm_box.grid(row=1, column=1, pady=15, padx=15, columnspan=3)
-
-        # Key Binds
-        self.bind('<KP_Left>', self.previous_btn_onclick())
-        self.bind('<KP_Right>', self.next_btn_onclick())
 
     # Methods
     def mouse_callback(self, event, x, y, flags, param):
@@ -103,16 +107,16 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 cv.rectangle(self.frame_with_rect, self.rect_top_left, self.rect_bottom_right, self.rect_color, 2)
                 self.final_frame = self.frame_with_rect
                 self.frame_with_rect = self.frame
-                cv.imshow('Frame', self.final_frame)
+                cv.imshow(IMG_WINDOW_NAME, self.final_frame)
 
                 # checking if corners are correctly defined
-                if self.rect_top_left[0] > self.rect_bottom_right[0]: # x are switched
+                if self.rect_top_left[0] > self.rect_bottom_right[0]:  # x are switched
                     top_left = (self.rect_bottom_right[0], self.rect_top_left[1])
                     bottom_right = (self.rect_top_left[0], self.rect_bottom_right[1])
                     self.rect_top_left = top_left
                     self.rect_bottom_right = bottom_right
 
-                if self.rect_top_left[1] > self.rect_bottom_right[1]: # y are switched
+                if self.rect_top_left[1] > self.rect_bottom_right[1]:  # y are switched
                     top_left = (self.rect_top_left[0], self.rect_bottom_right[1])
                     bottom_right = (self.rect_bottom_right[0], self.rect_top_left[1])
                     self.rect_top_left = top_left
@@ -129,12 +133,12 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 self.labels.append([CLASS_ID[self.selected_class_id], centerx, centery, width, height])
             else:
                 self.frame_with_rect = self.final_frame.copy()
-                cv.imshow('Frame', self.final_frame)
+                cv.imshow(IMG_WINDOW_NAME, self.final_frame)
 
         elif event == cv.EVENT_MOUSEMOVE and self.dragging_active:
             self.frame_with_rect = self.final_frame.copy()
             cv.rectangle(self.frame_with_rect, self.rect_top_left, (x, y), self.rect_color, 3)
-            cv.imshow('Frame', self.frame_with_rect)
+            cv.imshow(IMG_WINDOW_NAME, self.frame_with_rect)
 
     def load_frames(self):
         return [file for file in os.listdir(path_manager.get_frames_destination_path)
@@ -142,17 +146,57 @@ class FrameLabelingWindow(ctk.CTkToplevel):
 
     def clear_all(self):
         self.labels.clear()
-        self.final_frame = self.frame.copy()
-        self.frame_with_rect = self.frame.copy()
+        if self.frame is not None:
+            self.final_frame = self.frame.copy()
+            self.frame_with_rect = self.frame.copy()
+        else:
+            self.final_frame = None
+            self.frame_with_rect = None
         self.rect_top_left = None
         self.rect_bottom_right = None
         self.changes_saved = True
+
+    # OnKeyPressed method
+
+    def on_key_pressed(self, event):
+
+        # checking
+        labeling_tool_windows = gw.getWindowsWithTitle('Frame labeling tool')
+        img_windows = gw.getWindowsWithTitle(IMG_WINDOW_NAME)
+        focused = False
+
+        if len(labeling_tool_windows) > 0:
+            if labeling_tool_windows[0].isActive:
+                focused = True
+
+        if len(img_windows) > 0:
+            if img_windows[0].isActive:
+                focused = True
+
+        if focused:
+
+            # previous
+            if event.name == 'a':
+                self.previous_btn_onclick()
+
+            # next
+            elif event.name == 'd':
+                self.next_btn_onclick()
+
+            # save
+            elif event.name == 's':
+                self.save_label_onclick()
+
+            # clear
+            elif event.name == 'c':
+                self.clear_btn_onclick()
 
     # OnClick methods
 
     def clear_btn_onclick(self):
         self.clear_all()
-        cv.imshow('Frame', self.frame)
+        if self.frame is not None:
+            cv.imshow(IMG_WINDOW_NAME, self.frame)
 
     def save_label_onclick(self):
         if self.frame is not None and not self.changes_saved:
@@ -172,8 +216,8 @@ class FrameLabelingWindow(ctk.CTkToplevel):
             frame_path = path_manager.set_current_frame_path(self.selected_file)
             self.frame = cv.imread(frame_path)
             self.clear_all()
-            cv.imshow('Frame', self.frame)
-            cv.setMouseCallback('Frame', self.mouse_callback)
+            cv.imshow(IMG_WINDOW_NAME, self.frame)
+            cv.setMouseCallback(IMG_WINDOW_NAME, self.mouse_callback)
 
     def previous_btn_onclick(self):
         if self.selected_file is not None:
@@ -184,8 +228,8 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 self.frame = cv.imread(path)
                 self.cm_box.set(self.selected_file)
                 self.clear_all()
-                cv.imshow('Frame', self.frame)
-                cv.setMouseCallback('Frame', self.mouse_callback)
+                cv.imshow(IMG_WINDOW_NAME, self.frame)
+                cv.setMouseCallback(IMG_WINDOW_NAME, self.mouse_callback)
 
     def next_btn_onclick(self):
         if self.selected_file is not None:
@@ -196,10 +240,11 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 self.frame = cv.imread(path)
                 self.cm_box.set(self.selected_file)
                 self.clear_all()
-                cv.imshow('Frame', self.frame)
-                cv.setMouseCallback('Frame', self.mouse_callback)
+                cv.imshow(IMG_WINDOW_NAME, self.frame)
+                cv.setMouseCallback(IMG_WINDOW_NAME, self.mouse_callback)
 
     def exit_btn_onclick(self):
+        keyboard.unhook_all()
         cv.destroyAllWindows()
         self.destroy()
 
