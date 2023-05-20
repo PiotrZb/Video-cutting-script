@@ -72,7 +72,18 @@ $ brew install python-tk
 
 Paste the links to the url_list.txt file in the "Res" folder. <br />
 Each link should be on a separate line in the text file. <br />
-The videos will be saved in the "Downloads" folder.
+The videos will be saved in the "Downloads" folder.<br />
+
+Use video cutter module to extract frames from downloaded videos. <br />
+Thanks to the preview, you will be able to easly select interesting fragment. <br />
+If you want, you can add a prefix to the title of the extracted frames.<br />
+
+Labeling module allows you to create YOLO labels for exracted frames. <br />
+To make thinks easyer we added following keybindings:<br />
+* previous frame <kbd>A</kbd>
+* next frame <kbd>D</kbd>
+* save labels <kbd>S</kbd>
+* clear bboxes <kbd>C</kbd>
 
 ## GUI
 
