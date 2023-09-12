@@ -1,7 +1,12 @@
-# Video-cutting-script
-A script to download YouTube videos and cut frames from them
+# **🛠️ Video-cutting-script 🛠️**
 
-## Directory tree
+An integrated tool that allows you to create databases for training the YOLO algorithm.<br />
+Features:
+* videos downloading
+* frames extraction
+* frames labeling
+
+## Directory tree 🗃️
 ```bash
 .
 └── Video-cutting-script/
@@ -31,7 +36,7 @@ A script to download YouTube videos and cut frames from them
     └── requirements.txt
 ```
 
-## Installation
+## Installation ⚙️
 
 ### MacOS (ARM silicon)
 
@@ -68,7 +73,7 @@ $ brew install python-tk
 ```
 
 
-## Usage
+## Usage 👈
 
 Paste the links to the url_list.txt file in the "Res" folder. <br />
 Each link should be on a separate line in the text file. <br />
@@ -85,20 +90,39 @@ To make thinks easyer we added following keybindings:<br />
 * save labels <kbd>S</kbd>
 * clear bboxes <kbd>C</kbd>
 
-## GUI
+## GUI 🎨
 
-Menu
+* ### Menu 📜
+  
+<br>
+<p align="center">
+    <img width="202" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/151b94ad-3a7d-46cd-9eb5-dc1b5debfcbb"><br />
+</p>
+<br>
 
-<img width="202" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/151b94ad-3a7d-46cd-9eb5-dc1b5debfcbb"><br />
+* ### Video downloading module ⬇️
 
-Download module
+<br>
+<p align="center">
+    <img width="352" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/5b3c16a9-4cab-43ac-8180-8c91fcc8e3f0"><br />
+</p>
+<br>
 
-<img width="352" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/5b3c16a9-4cab-43ac-8180-8c91fcc8e3f0"><br />
+* ### Video cutting module ✂️
 
-Video cutting module
+<br>
+<p align="center">
+    <img width="352" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/c759a17f-0bb3-4148-a44a-3399a4992e7a"><br />
+</p>
+<br>
 
-<img width="352" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/c759a17f-0bb3-4148-a44a-3399a4992e7a"><br />
+* ### Frames labeling module 🏷️
 
-Frames labeling module
+<br>
+<p align="center">
+    <img width="267" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/d86fb3aa-e9e1-4d07-86ba-cc3722d51a07"><br />
+</p>
+<br>
 
-<img width="267" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/d86fb3aa-e9e1-4d07-86ba-cc3722d51a07"><br />
+## License :page_facing_up:
+[License](LICENSE)
