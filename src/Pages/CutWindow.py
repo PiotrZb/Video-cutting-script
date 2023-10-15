@@ -5,7 +5,7 @@ import math
 import numpy as np
 import threading
 from src.settings import path_manager, VIDEO_FILE_EXTENSIONS
-
+import re
 
 class CutWindow(ctk.CTkToplevel):
     def __init__(self):
@@ -43,7 +43,8 @@ class CutWindow(ctk.CTkToplevel):
             if file.endswith(VIDEO_FILE_EXTENSIONS):
                 self.files_path.append(file)
 
-        self.files = self.files_path
+
+        self.files = sorted(self.files_path, key=lambda s: [int(i) for i in re.findall(r'\d+', s)])
         self.selected_file = ''
 
         # Widgets
