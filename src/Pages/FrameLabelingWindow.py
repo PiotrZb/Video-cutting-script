@@ -4,8 +4,18 @@ import keyboard
 import cv2 as cv
 import pygetwindow as gw
 from src.settings import CLASS_ID, IMAGE_FILE_EXTENSIONS, path_manager
+import re
 
 IMG_WINDOW_NAME = 'Frame'
+
+
+def load_frames():
+    files = [file for file in
+             os.listdir(path_manager.get_frames_destination_path) if
+             file.endswith(IMAGE_FILE_EXTENSIONS)]
+    files = sorted(files,
+                   key=lambda s: [int(i) for i in re.findall(r'\d+', s)])
+    return files
 
 
 class FrameLabelingWindow(ctk.CTkToplevel):
@@ -21,8 +31,9 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         self.title('Frame labeling tool')
         self.grab_set()  # setting focus on new window
 
-        self.files = self.load_frames()
-        self.files.sort()
+        cv.namedWindow(IMG_WINDOW_NAME, cv.WINDOW_AUTOSIZE)
+
+        self.files = load_frames()
         self.selected_file = None
         self.frame = None
         self.frame_with_rect = None
@@ -71,12 +82,15 @@ class FrameLabelingWindow(ctk.CTkToplevel):
 
         self.cm_box.set('')
 
-        self.cm_box_class_id = ctk.CTkComboBox(master=self, values=list(CLASS_ID.keys()), state='readonly',
+        self.cm_box_class_id = ctk.CTkComboBox(master=self,
+                                               values=list(CLASS_ID.keys()),
+                                               state='readonly',
                                                command=self.cmbox_callback_select_class,
                                                width=200, justify='center')
         self.cm_box_class_id.set(self.selected_class_id)
 
-        self.label_class_id = ctk.CTkLabel(master=self, text=f'Selected class id')
+        self.label_class_id = ctk.CTkLabel(master=self,
+                                           text=f'Selected class id')
 
         self.exit_btn.grid(row=3, column=3, pady=15, padx=5)
         self.previous_btn.grid(row=2, column=1, pady=15, padx=5)
@@ -104,45 +118,58 @@ class FrameLabelingWindow(ctk.CTkToplevel):
                 self.rect_bottom_right = (x, y)
                 self.frame_with_rect = self.final_frame.copy()
 
-                cv.rectangle(self.frame_with_rect, self.rect_top_left, self.rect_bottom_right, self.rect_color, 2)
+                cv.rectangle(self.frame_with_rect, self.rect_top_left,
+                             self.rect_bottom_right, self.rect_color, 2)
                 self.final_frame = self.frame_with_rect
                 self.frame_with_rect = self.frame
                 cv.imshow(IMG_WINDOW_NAME, self.final_frame)
 
                 # checking if corners are correctly defined
-                if self.rect_top_left[0] > self.rect_bottom_right[0]:  # x are switched
-                    top_left = (self.rect_bottom_right[0], self.rect_top_left[1])
-                    bottom_right = (self.rect_top_left[0], self.rect_bottom_right[1])
+                if self.rect_top_left[0] > self.rect_bottom_right[
+                    0]:  # x are switched
+                    top_left = (
+                    self.rect_bottom_right[0], self.rect_top_left[1])
+                    bottom_right = (
+                    self.rect_top_left[0], self.rect_bottom_right[1])
                     self.rect_top_left = top_left
                     self.rect_bottom_right = bottom_right
 
-                if self.rect_top_left[1] > self.rect_bottom_right[1]:  # y are switched
-                    top_left = (self.rect_top_left[0], self.rect_bottom_right[1])
-                    bottom_right = (self.rect_bottom_right[0], self.rect_top_left[1])
+                if self.rect_top_left[1] > self.rect_bottom_right[
+                    1]:  # y are switched
+                    top_left = (
+                    self.rect_top_left[0], self.rect_bottom_right[1])
+                    bottom_right = (
+                    self.rect_bottom_right[0], self.rect_top_left[1])
                     self.rect_top_left = top_left
                     self.rect_bottom_right = bottom_right
 
                 frame_shape = self.frame.shape
-                width = abs(self.rect_bottom_right[0] - self.rect_top_left[0]) / frame_shape[1]
-                height = abs(self.rect_bottom_right[1] - self.rect_top_left[1]) / frame_shape[0]
-                centerx = (self.rect_top_left[0] + (self.rect_bottom_right[0] - self.rect_top_left[0]) / 2) / \
+                width = abs(self.rect_bottom_right[0] - self.rect_top_left[0]) / \
+                        frame_shape[1]
+                height = abs(
+                    self.rect_bottom_right[1] - self.rect_top_left[1]) / \
+                         frame_shape[0]
+                centerx = (self.rect_top_left[0] + (
+                            self.rect_bottom_right[0] - self.rect_top_left[
+                        0]) / 2) / \
                           frame_shape[1]
-                centery = (self.rect_top_left[1] + (self.rect_bottom_right[1] - self.rect_top_left[1]) / 2) / \
+                centery = (self.rect_top_left[1] + (
+                            self.rect_bottom_right[1] - self.rect_top_left[
+                        1]) / 2) / \
                           frame_shape[0]
 
-                self.labels.append([CLASS_ID[self.selected_class_id], centerx, centery, width, height])
+                self.labels.append(
+                    [CLASS_ID[self.selected_class_id], centerx, centery, width,
+                     height])
             else:
                 self.frame_with_rect = self.final_frame.copy()
                 cv.imshow(IMG_WINDOW_NAME, self.final_frame)
 
         elif event == cv.EVENT_MOUSEMOVE and self.dragging_active:
             self.frame_with_rect = self.final_frame.copy()
-            cv.rectangle(self.frame_with_rect, self.rect_top_left, (x, y), self.rect_color, 3)
+            cv.rectangle(self.frame_with_rect, self.rect_top_left, (x, y),
+                         self.rect_color, 3)
             cv.imshow(IMG_WINDOW_NAME, self.frame_with_rect)
-
-    def load_frames(self):
-        return [file for file in os.listdir(path_manager.get_frames_destination_path)
-                if file.endswith(IMAGE_FILE_EXTENSIONS)]
 
     def clear_all(self):
         self.labels.clear()
@@ -202,9 +229,12 @@ class FrameLabelingWindow(ctk.CTkToplevel):
         if self.frame is not None and not self.changes_saved:
             file_name = self.selected_file.split('.')[0]
 
-            with open(f'{path_manager.get_labels_destination_path}/{file_name}.txt', 'w') as file:
+            with open(
+                    f'{path_manager.get_labels_destination_path}/{file_name}.txt',
+                    'w') as file:
                 for label in self.labels:
-                    string_to_save = str(label[0]) + ' ' + str(label[1]) + ' ' + str(label[2]) + ' ' + str(
+                    string_to_save = str(label[0]) + ' ' + str(
+                        label[1]) + ' ' + str(label[2]) + ' ' + str(
                         label[3]) + ' ' + str(label[4]) + '\n'
 
                     file.write(string_to_save)
