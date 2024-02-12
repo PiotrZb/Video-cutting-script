@@ -72,6 +72,14 @@ You will need to install Tkinter using Homebrew
 $ brew install python-tk
 ```
 
+## Requirements ⚙️
+
+To install all required libraries, simply call following command in your enviroment:
+
+```console
+pip install -r requirements.txt
+```
+
 
 ## Usage 👈
 
@@ -123,6 +131,17 @@ To make thinks easyer we added following keybindings:<br />
     <img width="267" alt="image" src="https://github.com/PiotrZb/Video-cutting-script/assets/84187115/d86fb3aa-e9e1-4d07-86ba-cc3722d51a07"><br />
 </p>
 <br>
+
+## Contibutors 🤝
+
+<div style="display: flex;">
+     <a href="https://github.com/lukaszkusgithub"> 
+      <img src="https://avatars.githubusercontent.com/u/36661311?v=4" height="auto" width="100" style="border-radius:50%; margin: 10px"> 
+    </a> 
+     <a href="https://github.com/Artemis105"> 
+      <img src="https://avatars.githubusercontent.com/u/127984285?v=4" height="auto" width="100" style="border-radius:50%; margin: 10px"> 
+    </a> 
+</div>
 
 ## License :page_facing_up:
 [License](LICENSE)
